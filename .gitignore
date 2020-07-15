@@ -1,0 +1,4 @@
+cmd/*
+config/*.yml
+logs/*.log
+pids/*.pid
