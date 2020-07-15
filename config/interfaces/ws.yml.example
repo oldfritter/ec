@@ -1,0 +1,17 @@
+---
+# WS --------------------------------------------------------------------------------------
+## message
+- path: /api/ws/v1/message/listen
+  method: POST
+  auth: true
+- path: /api/ws/v1/message/upload
+  method: POST
+  auth: true
+
+## public_key
+- path: /api/ws/v1/public_key/listen
+  method: POST
+  auth: true
+- path: /api/ws/v1/public_key/upload
+  method: POST
+  auth: true

@@ -1,0 +1,19 @@
+---
+# Web --------------------------------------------------------------------------------------
+## user
+- path: /api/web/v1/user/info
+  method: GET
+  auth: true
+- path: /api/web/v1/user/info
+  method: POST
+  auth: true
+
+# pub_key
+- path: /api/web/v1/pub_key/upload
+  method: POST
+  auth: true
+
+# message
+- path: /api/web/v1/message/upload
+  method: POST
+  auth: true
