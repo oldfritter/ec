@@ -15,8 +15,8 @@ type Config struct {
 func InitConfigInDB(db *utils.GormDB) {
 	var configs []Config
 	db.Find(&configs)
-	envConfig.CurrentEnv.ConfigInDB = map[string]string{}
+	envConfig.Env.ConfigInDB = map[string]string{}
 	for _, config := range configs {
-		envConfig.CurrentEnv.ConfigInDB[config.Key] = config.Value
+		envConfig.Env.ConfigInDB[config.Key] = config.Value
 	}
 }

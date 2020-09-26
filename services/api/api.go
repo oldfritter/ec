@@ -24,6 +24,9 @@ func main() {
 	initialize()
 
 	e := echo.New()
+	if envConfig.Env.Newrelic.AppName != "" && envConfig.Env.Newrelic.LicenseKey != "" {
+		e.Use(newrelic.NewRelic(envConfig.Env.Newrelic.AppName, envConfig.Env.Newrelic.LicenseKey))
+	}
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	e.Use(initializers.Auth)

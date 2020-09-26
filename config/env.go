@@ -8,7 +8,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-type Env struct {
+var Env struct {
 	Dashboard bool   `yaml:"dashboard"`
 	Model     string `yaml:"model"`
 	Newrelic  struct {
@@ -20,8 +20,6 @@ type Env struct {
 	ConfigInDB map[string]string
 }
 
-var CurrentEnv Env
-
 func InitEnv() {
 	path_str, _ := filepath.Abs("config/env.yml")
 	content, err := ioutil.ReadFile(path_str)
@@ -29,7 +27,7 @@ func InitEnv() {
 		log.Fatal(err)
 		return
 	}
-	err = yaml.Unmarshal(content, &CurrentEnv)
+	err = yaml.Unmarshal(content, &Env)
 	if err != nil {
 		log.Fatal(err)
 	}

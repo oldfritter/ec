@@ -44,13 +44,13 @@ func (c *GormDB) DbRollback() {
 }
 
 func getConnectionString(config *ConfigEnv, name string) string {
-	host := config.Get(envConfig.CurrentEnv.Model+"."+name+".host", "")
-	port := config.Get(envConfig.CurrentEnv.Model+"."+name+".port", "3306")
-	user := config.Get(envConfig.CurrentEnv.Model+"."+name+".username", "")
-	pass := config.Get(envConfig.CurrentEnv.Model+"."+name+".password", "")
-	dbname := config.Get(envConfig.CurrentEnv.Model+"."+name+".database", "")
-	protocol := config.Get(envConfig.CurrentEnv.Model+"."+name+".protocol", "tcp")
-	dbargs := config.Get(envConfig.CurrentEnv.Model+"."+name+".dbargs", " ")
+	host := config.Get(envConfig.Env.Model+"."+name+".host", "")
+	port := config.Get(envConfig.Env.Model+"."+name+".port", "3306")
+	user := config.Get(envConfig.Env.Model+"."+name+".username", "")
+	pass := config.Get(envConfig.Env.Model+"."+name+".password", "")
+	dbname := config.Get(envConfig.Env.Model+"."+name+".database", "")
+	protocol := config.Get(envConfig.Env.Model+"."+name+".protocol", "tcp")
+	dbargs := config.Get(envConfig.Env.Model+"."+name+".dbargs", " ")
 	if strings.Trim(dbargs, " ") != "" {
 		dbargs = "?" + dbargs
 	} else {
@@ -67,9 +67,9 @@ func InitMainDB() {
 	if err != nil {
 		panic(err)
 	}
-	db.DB().SetMaxIdleConns(config.GetInt(envConfig.CurrentEnv.Model+".main.pool", 5))
-	db.DB().SetMaxOpenConns(config.GetInt(envConfig.CurrentEnv.Model+".main.maxopen", 0))
-	du, _ := time.ParseDuration(config.Get(envConfig.CurrentEnv.Model+".main.timeout", "3600") + "s")
+	db.DB().SetMaxIdleConns(config.GetInt(envConfig.Env.Model+".main.pool", 5))
+	db.DB().SetMaxOpenConns(config.GetInt(envConfig.Env.Model+".main.maxopen", 0))
+	du, _ := time.ParseDuration(config.Get(envConfig.Env.Model+".main.timeout", "3600") + "s")
 	db.DB().SetConnMaxLifetime(du)
 	db.Exec("set transaction isolation level repeatable read")
 	MainDb = db
