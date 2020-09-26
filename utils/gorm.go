@@ -9,7 +9,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 
-	envConfig "demo/config"
+	envConfig "ec/config"
 )
 
 var (

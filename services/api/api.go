@@ -11,13 +11,13 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	// newrelic "github.com/oldfritter/echo-middleware/v4"
+	newrelic "github.com/oldfritter/echo-middleware/v4"
 
-	envConfig "demo/config"
-	"demo/initializers"
-	"demo/models"
-	"demo/routes"
-	"demo/utils"
+	envConfig "ec/config"
+	"ec/initializers"
+	"ec/models"
+	"ec/services/api/routes"
+	"ec/utils"
 )
 
 func main() {

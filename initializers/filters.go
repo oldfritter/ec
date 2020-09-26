@@ -7,8 +7,8 @@ import (
 	"github.com/gomodule/redigo/redis"
 	"github.com/labstack/echo/v4"
 
-	"demo/initializers/locale"
-	"demo/utils"
+	"ec/initializers/locale"
+	"ec/utils"
 )
 
 func LimitTrafficWithIp(context echo.Context) bool {

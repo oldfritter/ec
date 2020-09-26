@@ -6,8 +6,8 @@ import (
 	"reflect"
 	"strings"
 
-	. "demo/models"
-	"demo/utils"
+	. "ec/models"
+	"ec/utils"
 )
 
 type Payload struct {

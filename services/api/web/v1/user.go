@@ -5,9 +5,9 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"demo/api/helpers"
-	. "demo/models"
-	"demo/utils"
+	. "ec/models"
+	"ec/services/api/helpers"
+	"ec/utils"
 )
 
 func UserInfo(c echo.Context) (err error) {

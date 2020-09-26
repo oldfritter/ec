@@ -3,11 +3,11 @@ connect:
   port: 5672
   username: guest
   password: guest
-  vhost: /demo
+  vhost: /ec
 
 exchange:
   default:
-    key: demo.default
+    key: ec.default
     type: direct
   fanout:
-    default: demo.fanout
+    default: ec.fanout

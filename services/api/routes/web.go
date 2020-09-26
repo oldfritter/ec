@@ -3,7 +3,7 @@ package routes
 import (
 	"github.com/labstack/echo/v4"
 
-	v1 "demo/api/web/v1"
+	v1 "ec/services/api/web/v1"
 )
 
 func SetWebInterfaces(e *echo.Echo) {

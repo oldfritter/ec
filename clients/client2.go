@@ -16,8 +16,8 @@ import (
 
 	"github.com/gorilla/websocket"
 
-	"demo/models"
-	"demo/utils"
+	"ec/models"
+	"ec/utils"
 )
 
 const (

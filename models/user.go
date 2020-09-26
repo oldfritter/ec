@@ -4,7 +4,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
 
-	"demo/utils"
+	"ec/utils"
 )
 
 type User struct {

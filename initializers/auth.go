@@ -11,8 +11,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"gopkg.in/yaml.v2"
 
-	. "demo/models"
-	"demo/utils"
+	. "ec/models"
+	"ec/utils"
 )
 
 type ApiInterface struct {

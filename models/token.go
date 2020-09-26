@@ -5,7 +5,7 @@ import (
 
 	"github.com/jinzhu/gorm"
 
-	"demo/utils"
+	"ec/utils"
 )
 
 const (

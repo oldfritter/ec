@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"log"
 
-	"demo/utils"
+	"ec/utils"
 )
 
 type PublicKey struct {

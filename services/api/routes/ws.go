@@ -3,7 +3,7 @@ package routes
 import (
 	"github.com/labstack/echo/v4"
 
-	v1 "demo/api/ws/v1"
+	v1 "ec/services/api/ws/v1"
 )
 
 func SetWsInterfaces(e *echo.Echo) {

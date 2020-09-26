@@ -3,7 +3,7 @@ package models
 import (
 	"time"
 
-	"demo/utils"
+	"ec/utils"
 )
 
 const (

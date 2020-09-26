@@ -1,7 +1,7 @@
 package models
 
 import (
-	"demo/utils"
+	"ec/utils"
 	"github.com/jinzhu/gorm"
 )
 

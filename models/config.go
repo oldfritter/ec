@@ -1,8 +1,8 @@
 package models
 
 import (
-	envConfig "demo/config"
-	"demo/utils"
+	envConfig "ec/config"
+	"ec/utils"
 )
 
 type Config struct {

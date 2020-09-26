@@ -1,4 +1,4 @@
-module demo
+module ec
 
 go 1.13
 
