@@ -7,12 +7,13 @@ import (
 	"github.com/gomodule/redigo/redis"
 	"github.com/labstack/echo/v4"
 
+	"ec/config"
 	"ec/initializers/locale"
-	"ec/utils"
+	. "ec/models"
 )
 
 func LimitTrafficWithIp(context echo.Context) bool {
-	dataRedis := utils.GetRedisConn("data")
+	dataRedis := config.GetRedisConn("data")
 	defer dataRedis.Close()
 	key := "limit-traffic-with-ip:" + context.Path() + ":" + context.RealIP()
 	timesStr, _ := redis.String(dataRedis.Do("GET", key))
@@ -59,7 +60,7 @@ func checkTimestamp(context echo.Context, params map[string]string) bool {
 }
 
 func checkSign(context echo.Context, params map[string]string) (allow bool) {
-	mainDB := utils.MainDbBegin()
+	mainDB := MainDbBegin()
 	defer mainDB.DbRollback()
 	return
 }

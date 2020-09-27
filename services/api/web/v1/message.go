@@ -8,6 +8,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 
+	"ec/config"
 	. "ec/models"
 	"ec/services/api/helpers"
 	"ec/utils"
@@ -29,7 +30,7 @@ func MessageUpload(c echo.Context) (err error) {
 	if err != nil {
 		log.Println(err)
 	}
-	utils.PublishToPubSubChannels(NotifyMessageWithRedis, &b)
+	config.PublishToPubSubChannels(NotifyMessageWithRedis, &b)
 
 	response := utils.SuccessResponse
 	return c.JSON(http.StatusOK, response)

@@ -1,4 +1,4 @@
-package utils
+package config
 
 import (
 	"context"
@@ -16,18 +16,6 @@ var (
 	PublishPool *redis.Pool
 )
 
-func InitRedisPools() {
-	DatePool = newRedisPool("data")
-	LimitPool = newRedisPool("limit")
-	PublishPool = newRedisPool("publish")
-}
-
-func CloseRedisPools() {
-	DatePool.Close()
-	LimitPool.Close()
-	PublishPool.Close()
-}
-
 func GetRedisConn(redisName string) redis.Conn {
 	if redisName == "data" {
 		return DatePool.Get()
@@ -39,8 +27,8 @@ func GetRedisConn(redisName string) redis.Conn {
 	return nil
 }
 
-func newRedisPool(redisName string) *redis.Pool {
-	config := getRedisConfig()
+func NewRedisPool(redisName string) *redis.Pool {
+	config := GetRedisConfig()
 	capacity := config.GetInt(redisName+".pool", 10)
 	maxCapacity := config.GetInt(redisName+".maxopen", 0)
 	idleTimout := config.GetDuration(redisName+".timeout", "4m")

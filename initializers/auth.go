@@ -101,7 +101,7 @@ func Auth(next echo.HandlerFunc) echo.HandlerFunc {
 }
 
 func normalAuth(context echo.Context, params map[string]string) (user User, token Token, err error) {
-	db := utils.MainDbBegin()
+	db := MainDbBegin()
 	defer db.DbRollback()
 	if db.Where("`type` = ?", "Login::Token").Where("token = ? AND ? < expire_at", context.Request().Header.Get("Authorization"), time.Now()).First(&token).RecordNotFound() {
 		return user, token, utils.BuildError("1101")

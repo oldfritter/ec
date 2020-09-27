@@ -5,6 +5,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 
+	"ec/config"
 	. "ec/models"
 	"ec/services/api/helpers"
 	"ec/utils"
@@ -12,7 +13,7 @@ import (
 
 func UserInfo(c echo.Context) (err error) {
 	params := helpers.StringParams(c)
-	db := utils.MainDb
+	db := config.MainDb
 	var user User
 	if db.Where("sn = ?", params["sn"]).First(&user).RecordNotFound() {
 		return utils.BuildError("2001")

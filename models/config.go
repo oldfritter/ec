@@ -1,8 +1,7 @@
 package models
 
 import (
-	envConfig "ec/config"
-	"ec/utils"
+	"ec/config"
 )
 
 type Config struct {
@@ -12,11 +11,11 @@ type Config struct {
 	Value       string `json:"value"`
 }
 
-func InitConfigInDB(db *utils.GormDB) {
+func InitConfigInDB(db *GormDB) {
 	var configs []Config
 	db.Find(&configs)
-	envConfig.Env.ConfigInDB = map[string]string{}
-	for _, config := range configs {
-		envConfig.Env.ConfigInDB[config.Key] = config.Value
+	config.Env.ConfigInDB = map[string]string{}
+	for _, c := range configs {
+		config.Env.ConfigInDB[c.Key] = c.Value
 	}
 }

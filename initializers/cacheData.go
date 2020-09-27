@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	. "ec/models"
-	"ec/utils"
 )
 
 type Payload struct {
@@ -15,7 +14,7 @@ type Payload struct {
 }
 
 func InitCacheData() {
-	db := utils.MainDbBegin()
+	db := MainDbBegin()
 	defer db.DbRollback()
 	// InitAllCurrencies(db)
 	// InitAllRoles(db)
@@ -65,7 +64,7 @@ func LoadCacheData() {
 // }
 
 func (payload *Payload) Configs() {
-	db := utils.MainDbBegin()
+	db := MainDbBegin()
 	defer db.DbRollback()
 	InitConfigInDB(db)
 }

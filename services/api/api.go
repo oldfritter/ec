@@ -72,18 +72,18 @@ func customHTTPErrorHandler(err error, context echo.Context) {
 
 func initialize() {
 	envConfig.InitEnv()
-	utils.InitMainDB()
-	utils.InitRedisPools()
-	models.AutoMigrations()
+	initializers.InitMainDB()
+	initializers.InitRedisPools()
+	models.MainMigrations()
 	models.InitI18n()
 	// initializers.InitializeAmqpConfig()
 	initializers.LoadInterfaces()
 	// initializers.LoadCacheData()
-	utils.SetLogAndPid("api")
+	utils.SetLogAndPid()
 }
 
 func closeResource() {
 	// initializers.CloseAmqpConnection()
-	utils.CloseRedisPools()
-	utils.CloseMainDB()
+	initializers.CloseRedisPools()
+	initializers.CloseMainDB()
 }

@@ -10,9 +10,9 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo/v4"
 
+	"ec/config"
 	. "ec/models"
 	"ec/services/api/helpers"
-	"ec/utils"
 )
 
 const (
@@ -33,7 +33,7 @@ func PublicKeyListen(e echo.Context) (err error) {
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
-	err = utils.ListenPubSubChannels(
+	err = config.ListenPubSubChannels(
 		ctx,
 		func() error {
 			return nil
@@ -86,9 +86,9 @@ func PublicKeyUpload(e echo.Context) (err error) {
 		if err != nil {
 			log.Println(err)
 		}
-		utils.PublishToPubSubChannels(NotifyPublicKeyWithRedis, &b)
+		config.PublishToPubSubChannels(NotifyPublicKeyWithRedis, &b)
 		log.Println("sended public key: %s", publicKey)
-		db := utils.MainDbBegin()
+		db := MainDbBegin()
 		defer db.DbRollback()
 		db.Save(&publicKey)
 		db.DbCommit()

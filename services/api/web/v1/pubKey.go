@@ -14,7 +14,7 @@ import (
 // 参数: index, content
 func PubKeyUpload(c echo.Context) (err error) {
 	params := helpers.StringParams(c)
-	db := utils.MainDbBegin()
+	db := MainDbBegin()
 	defer db.DbRollback()
 	user := c.Get("current_user").(User)
 	var publicKey PublicKey

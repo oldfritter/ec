@@ -10,9 +10,9 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo/v4"
 
+	"ec/config"
 	. "ec/models"
 	"ec/services/api/helpers"
-	"ec/utils"
 )
 
 const (
@@ -25,7 +25,7 @@ func MessageListen(e echo.Context) (err error) {
 	defer c.Close()
 	user := e.Get("current_user").(User)
 	ctx, cancel := context.WithCancel(context.Background())
-	err = utils.ListenPubSubChannels(
+	err = config.ListenPubSubChannels(
 		ctx,
 		func() error {
 			return nil
@@ -77,7 +77,7 @@ func MessageUpload(e echo.Context) (err error) {
 		if err != nil {
 			log.Println(err)
 		}
-		utils.PublishToPubSubChannels(NotifyMessageWithRedis, &b)
+		config.PublishToPubSubChannels(NotifyMessageWithRedis, &b)
 		log.Println("sended: %s", message)
 	}
 	return

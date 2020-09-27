@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"log"
 
-	"ec/utils"
+	"ec/config"
 )
 
 type PublicKey struct {
@@ -19,5 +19,5 @@ func (pk *PublicKey) AfterSave() {
 	if err != nil {
 		log.Println(err)
 	}
-	utils.PublishToPubSubChannels(NotifyPublicKeyWithRedis, &b)
+	config.PublishToPubSubChannels(NotifyPublicKeyWithRedis, &b)
 }
