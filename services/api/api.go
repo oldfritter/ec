@@ -14,6 +14,7 @@ import (
 	newrelic "github.com/oldfritter/echo-middleware/v4"
 
 	envConfig "ec/config"
+	"ec/config/cloudStorages"
 	"ec/initializers"
 	"ec/models"
 	"ec/services/api/routes"
@@ -72,6 +73,9 @@ func customHTTPErrorHandler(err error, context echo.Context) {
 
 func initialize() {
 	envConfig.InitEnv()
+	cloudStorages.InitAwsS3Config()
+	cloudStorages.InitQiniuConfig()
+
 	initializers.InitMainDB()
 	initializers.InitRedisPools()
 	models.MainMigrations()

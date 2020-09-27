@@ -18,6 +18,7 @@ require (
 	github.com/newrelic/go-agent v3.8.0+incompatible // indirect
 	github.com/oldfritter/echo-middleware/v4 v4.0.3
 	github.com/oldfritter/sneaker-go v1.1.0
+	github.com/qiniu/api.v7/v7 v7.5.0
 	github.com/qor/admin v0.0.0-20200701030804-02d81a10a8bf // indirect
 	github.com/qor/assetfs v0.0.0-20170713023933-ff57fdc13a14 // indirect
 	github.com/qor/cache v0.0.0-20171031031927-c9d48d1f13ba // indirect
