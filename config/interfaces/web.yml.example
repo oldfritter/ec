@@ -17,3 +17,8 @@
 - path: /api/web/v1/message/upload
   method: POST
   auth: true
+
+# cloud_storage
+- path: /api/web/v1/cloud_storage/upload/auth
+  method: GET
+  auth: true

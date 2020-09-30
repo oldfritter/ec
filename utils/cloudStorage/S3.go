@@ -6,21 +6,20 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/aws/aws-sdk-go/service/sts"
 
-	"ec/config/CloudStorages"
+	"ec/config/cloudStorages"
 )
 
 func UploadFileToS3(bucket, key, filePath string) error {
 	s, err := session.NewSession(&aws.Config{
-		Region:      aws.String(CloudStorages.S3Config["AWS_REGION"]),
-		Credentials: credentials.NewStaticCredentials(CloudStorages.S3Config["AWS_ACCESS_KEY_ID"], CloudStorages.S3Config["AWS_SECRET_ACCESS_KEY"], ""), // token can be left blank for now
+		Region:      aws.String(cloudStorages.S3Config["AWS_REGION"]),
+		Credentials: credentials.NewStaticCredentials(cloudStorages.S3Config["AWS_ACCESS_KEY_ID"], cloudStorages.S3Config["AWS_SECRET_ACCESS_KEY"], ""),
 	})
 	if err != nil {
 		return err
@@ -63,4 +62,24 @@ func AddFileToS3(s *session.Session, bucket, key, filePath string) error {
 	} else {
 		return nil
 	}
+}
+
+func Url4UploadFileToS3(key string) (url string, err error) {
+	svc := s3.New(
+		session.New(
+			&aws.Config{
+				Region:      aws.String(cloudStorages.S3Config["AWS_REGION"]),
+				Credentials: credentials.NewStaticCredentials(cloudStorages.S3Config["AWS_ACCESS_KEY_ID"], cloudStorages.S3Config["AWS_SECRET_ACCESS_KEY"], ""),
+			},
+		),
+	)
+	req, _ := svc.PutObjectRequest(&s3.PutObjectInput{
+		Bucket: aws.String(cloudStorages.S3Config["BUCKET"]),
+		Key:    aws.String(key),
+	})
+	url, err = req.Presign(15 * time.Minute)
+	if err != nil {
+		log.Println("The err:", err)
+	}
+	return
 }

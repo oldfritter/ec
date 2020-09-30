@@ -9,9 +9,8 @@ import (
 )
 
 var Env struct {
-	Dashboard bool   `yaml:"dashboard"`
-	Model     string `yaml:"model"`
-	Newrelic  struct {
+	Model    string `yaml:"model"`
+	Newrelic struct {
 		AppName    string `yaml:"app_name"`
 		LicenseKey string `yaml:"license_key"`
 	} `yaml:"newrelic"`
