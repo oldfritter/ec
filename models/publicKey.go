@@ -9,8 +9,9 @@ import (
 
 type PublicKey struct {
 	CommonModel
-	UserSn  string `json:"user_sn"`
 	Index   int    `json:"index"`
+	UserId  int    `json:"user_id"`
+	UserSn  string `json:"user_sn"`
 	Content string `json:"content" gorm:"type:text"`
 }
 

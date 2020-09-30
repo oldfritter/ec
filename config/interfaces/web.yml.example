@@ -7,6 +7,8 @@
 - path: /api/web/v1/user/info
   method: POST
   auth: true
+- path: /api/web/v1/user/login
+  method: POST
 
 # pub_key
 - path: /api/web/v1/pub_key/upload

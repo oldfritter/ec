@@ -15,9 +15,10 @@ type User struct {
 	State          int    `gorm:"default:null" json:"state"`        // 状态
 	// GroupId int
 
-	Password   string      `sql:"-" json:"-"`
-	Tokens     []Token     `sql:"-" json:"tokens"`
-	PublicKeys []PublicKey `sql:"-" json:"public_keys"`
+	Tokens     []*Token     `gorm:"ForeignKey:UserId" json:"tokens"`
+	PublicKeys []*PublicKey `gorm:"ForeignKey:UserId" json:"public_keys"`
+
+	Password string `sql:"-" json:"-"`
 }
 
 func (user *User) BeforeCreate(db *gorm.DB) {
