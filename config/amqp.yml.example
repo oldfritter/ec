@@ -7,7 +7,7 @@ connect:
 
 exchange:
   default:
-    key: center.default
+    key: ec.default
     type: direct
   fanout:
-    default: center.fanout
+    default: ec.fanout

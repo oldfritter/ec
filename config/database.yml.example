@@ -1,6 +1,6 @@
 production:
   main:
-    database: cherry
+    database: ec
     username: root
     password: 
     host: 127.0.0.1
@@ -10,7 +10,7 @@ production:
 
 development:
   main:
-    database: cherry
+    database: ec
     username: root
     password: 
     host: 127.0.0.1
