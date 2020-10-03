@@ -8,7 +8,6 @@ import (
 )
 
 type PublicKey struct {
-	CommonModel
 	Index   int    `json:"index"`
 	UserId  int    `json:"user_id"`
 	UserSn  string `json:"user_sn"`

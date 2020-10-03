@@ -17,6 +17,7 @@ type User struct {
 
 	Tokens     []*Token     `gorm:"ForeignKey:UserId" json:"tokens"`
 	PublicKeys []*PublicKey `gorm:"ForeignKey:UserId" json:"public_keys"`
+	Groups     []*Group     `gorm:"ForeignKey:MemberId" json:"groups"`
 
 	Password string `sql:"-" json:"-"`
 }
