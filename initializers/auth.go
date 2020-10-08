@@ -1,7 +1,6 @@
 package initializers
 
 import (
-	// "fmt"
 	"io/ioutil"
 	"log"
 	"path/filepath"
@@ -110,7 +109,10 @@ func Auth(next echo.HandlerFunc) echo.HandlerFunc {
 func normalAuth(params map[string]string) (user User, err error) {
 	db := MainDbBegin()
 	defer db.DbRollback()
-	if db.Joins("INNER JOIN (tokens) ON (tokens.user_id = users.id)").Where("tokens.`type` = ?", "Login::Token").Where("tokens.token = ? AND ? < tokens.expire_at", params["authorization"], time.Now()).First(&user).RecordNotFound() {
+	if db.Joins("INNER JOIN (tokens) ON (tokens.user_id = users.id)").
+		Where("tokens.`type` = ?", "Login::Token").
+		Where("tokens.token = ? AND ? < tokens.expire_at", params["authorization"], time.Now()).
+		First(&user).RecordNotFound() {
 		return user, utils.BuildError("1101")
 	}
 	return
