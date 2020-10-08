@@ -9,13 +9,14 @@ import (
 )
 
 const (
-	DefaultExpire = time.Hour * 24 * 7 // 7天有效期
+	DefaultExpire = time.Hour * 24 // 1天有效期
 )
 
 type Token struct {
 	CommonModel
 	Type         string    `gorm:"type:varchar(32)" json:"type"`  // 令牌类型 Tokens::Login, Tokens::AccessToken
 	Token        string    `gorm:"type:varchar(64)" json:"token"` // 授权令牌
+	RemoteIp     string    `gorm:"varchar(64)" json:"-"`
 	UserId       int       `json:"user_id"`                       // 所属用户
 	IsUsed       bool      `json:"is_used"`                       // 是否已使用
 	ExpireAt     time.Time `gorm:"default:null" json:"expire_at"` // 过期时间

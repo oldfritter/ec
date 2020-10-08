@@ -64,3 +64,8 @@ func checkSign(context echo.Context, params map[string]string) (allow bool) {
 	defer mainDB.DbRollback()
 	return
 }
+
+// TODO: IP检测
+func checkIP(context echo.Context, params map[string]string) bool {
+	return
+}

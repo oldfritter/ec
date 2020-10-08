@@ -2,7 +2,6 @@ package v1
 
 import (
 	"net/http"
-	// "time"
 
 	"github.com/labstack/echo/v4"
 
@@ -14,12 +13,12 @@ import (
 
 func UserLogin(c echo.Context) (err error) {
 	params := helpers.StringParams(c)
-	db := config.MainDb
+	db := MainDbBegin()
+	defer db.DbRollback()
 	var user User
 	if db.Joins("INNER JOIN (identities) ON (identities.user_id = users.id)").
 		Where("identities.source = ?", params["source"]).
 		Where("identities.symbol = ?", params["symbol"]).
-		// Preload("Tokens", "? < expire_at", time.Now().Format("2006-01-02 15:04:05")).
 		First(&user).RecordNotFound() {
 		return utils.BuildError("2002")
 	} else {
@@ -31,6 +30,9 @@ func UserLogin(c echo.Context) (err error) {
 	// TODO:
 	// notify user
 
+	token := Token{UserId: user.Id, RemoteIp: c.RealIP()}
+	db.Save(&token)
+	user.Tokens = append(user.Tokens, token)
 	response := utils.SuccessResponse
 	response.Body = user
 	return c.JSON(http.StatusOK, response)
@@ -65,6 +67,9 @@ func UserRegister(c echo.Context) (err error) {
 		identity.Symbol = params["symbol"]
 		identity.User = user
 		db.Save(&identity)
+		token := Token{UserId: user.Id, RemoteIp: c.RealIP()}
+		db.Save(&token)
+		user.Tokens = append(user.Tokens, token)
 		db.DbCommit()
 
 		response := utils.SuccessResponse

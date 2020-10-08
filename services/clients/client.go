@@ -24,7 +24,7 @@ import (
 
 const (
 	GateWay = "127.0.0.1:9700"
-	Token   = "2819c144d5946404c0516b6f817a960db37d4929"
+	// Token   = "2819c144d5946404c0516b6f817a960db37d4929"
 	// MateSn  = "234567"
 )
 
@@ -33,7 +33,7 @@ var (
 	matePubKeys [3]string
 	Messages    = []string{"level", "content", "test"}
 
-	email, password, mateSn string
+	email, password, token, mateSn string
 )
 
 func init() {
@@ -55,6 +55,10 @@ func init() {
 		password = string(sentence)
 	}
 
+	login()
+	// 打印好友列表
+
+	// 择聊天对象
 	fmt.Print("Chat with > ")
 	sentence, err = buf.ReadBytes('\n')
 	if err != nil {
@@ -109,7 +113,7 @@ func loadChatUserInfo() {
 		return
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Set("Authorization", Token)
+	req.Header.Set("Authorization", token)
 	resp, err := http.DefaultClient.Do(req)
 	defer resp.Body.Close()
 	b, err := ioutil.ReadAll(resp.Body)
@@ -124,6 +128,11 @@ func loadChatUserInfo() {
 
 }
 
+// 登录账号
+func login() {
+
+}
+
 // 上传我的公钥
 func uploadPubKeys() {
 	for i, key := range privKeys {
@@ -131,7 +140,7 @@ func uploadPubKeys() {
 		data := url.Values{}
 		data.Set("index", strconv.Itoa(i+1))
 		data.Set("content", string(b))
-		data.Set("token", Token)
+		data.Set("token", token)
 		url := "http://" + GateWay + "/api/web/v1/pub_key/upload"
 		body := strings.NewReader(data.Encode())
 		req, err := http.NewRequest("POST", url, body)
@@ -139,7 +148,7 @@ func uploadPubKeys() {
 			return
 		}
 		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-		req.Header.Set("Authorization", Token)
+		req.Header.Set("Authorization", token)
 		http.DefaultClient.Do(req)
 	}
 }
@@ -158,7 +167,7 @@ func sendMessage(content string) {
 		return
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Set("Authorization", Token)
+	req.Header.Set("Authorization", token)
 	http.DefaultClient.Do(req)
 }
 
@@ -167,7 +176,7 @@ func subscribeMessage() {
 	u := url.URL{Scheme: "ws", Host: GateWay, Path: "/api/ws/v1/message/listen"}
 	log.Println("connecting to ", u.String())
 	header := http.Header{}
-	header.Add("Authorization", Token)
+	header.Add("Authorization", token)
 	c, _, err := websocket.DefaultDialer.Dial(u.String(), header)
 	if err != nil {
 		log.Println("dial:", err)
@@ -215,7 +224,7 @@ func subscribeChatUserPubKeys() {
 	u := url.URL{Scheme: "ws", Host: GateWay, Path: "/api/ws/v1/public_key/listen"}
 	log.Println("connecting to ", u.String())
 	header := http.Header{}
-	header.Add("Authorization", Token)
+	header.Add("Authorization", token)
 	c, _, err := websocket.DefaultDialer.Dial(u.String(), header)
 	if err != nil {
 		log.Println("dial:", err)
