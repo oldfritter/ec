@@ -9,6 +9,8 @@
   auth: true
 - path: /api/web/v1/user/login
   method: POST
+- path: /api/web/v1/user/register
+  method: POST
 
 # pub_key
 - path: /api/web/v1/pub_key/upload

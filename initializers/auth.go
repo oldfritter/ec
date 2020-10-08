@@ -76,38 +76,46 @@ func Auth(next echo.HandlerFunc) echo.HandlerFunc {
 		for k, v := range values {
 			params[k] = v[0]
 		}
-		log.Println("params: ", params)
 		if currentApiInterface.Path == "" {
 			return utils.BuildError("1025")
 		}
 		if context.Request().Header.Get("Authorization") == "" {
 			return utils.BuildError("1026")
+		} else {
+			params["authorization"] = context.Request().Header.Get("Authorization")
 		}
-		if currentApiInterface.CheckTimestamp && checkTimestamp(context, params) == false {
+		params["device"] = context.Request().Header.Get("Device")
+		if currentApiInterface.CheckTimestamp && !checkTimestamp(context, params) {
 			return utils.BuildError("1024")
 		}
 		if currentApiInterface.Sign && !checkSign(context, params) {
 			return utils.BuildError("1023")
 		}
-		user, token, err := normalAuth(context, params)
+		var user User
+		var err error
+		if params["device"] == "" {
+			user, err = normalAuth(params)
+		} else {
+			user, err = deviceAuth(params)
+		}
 		if err != nil {
 			log.Println(err)
 			return err
 		}
-		context.Set("current_token", token.Token)
 		context.Set("current_user", user)
 		return next(context)
 	}
 }
 
-func normalAuth(context echo.Context, params map[string]string) (user User, token Token, err error) {
+func normalAuth(params map[string]string) (user User, err error) {
 	db := MainDbBegin()
 	defer db.DbRollback()
-	if db.Where("`type` = ?", "Login::Token").Where("token = ? AND ? < expire_at", context.Request().Header.Get("Authorization"), time.Now()).First(&token).RecordNotFound() {
-		return user, token, utils.BuildError("1101")
+	if db.Joins("INNER JOIN (tokens) ON (tokens.user_id = users.id)").Where("tokens.`type` = ?", "Login::Token").Where("tokens.token = ? AND ? < tokens.expire_at", params["authorization"], time.Now()).First(&user).RecordNotFound() {
+		return user, utils.BuildError("1101")
 	}
-	if db.Where("id = ?", token.UserId).First(&user).RecordNotFound() {
-		err = utils.BuildError("1101")
-	}
+	return
+}
+
+func deviceAuth(params map[string]string) (user User, err error) {
 	return
 }

@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	DefaultExpire = time.Hour * 24 * 7
+	DefaultExpire = time.Hour * 24 * 7 // 7天有效期
 )
 
 type Token struct {
@@ -26,10 +26,7 @@ func (token *Token) BeforeCreate(db *gorm.DB) {
 	if token.Type == "" {
 		token.Type = "Tokens::Login"
 	}
-	now := time.Now()
-	if token.ExpireAt.Before(now) {
-		token.ExpireAt = now.Add(DefaultExpire)
-	}
+	token.ExpireAt = time.Now().Add(DefaultExpire)
 	count := 9
 	for count > 0 {
 		token.Token = utils.RandStringRunes(64)
