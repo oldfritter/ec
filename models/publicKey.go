@@ -4,10 +4,13 @@ import (
 	"encoding/json"
 	"log"
 
+	"github.com/jinzhu/gorm"
+
 	"ec/config"
 )
 
 type PublicKey struct {
+	gorm.Model
 	Index   int
 	UserId  int
 	UserSn  string

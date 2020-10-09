@@ -29,7 +29,6 @@ const (
 var (
 	privKeys    [3]*rsa.PrivateKey
 	matePubKeys [3]string
-	// Messages    = []string{"level", "content", "test"}
 
 	email, password, token, mateSn string
 )
@@ -42,7 +41,7 @@ func init() {
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		email = string(sentence)
+		email = strings.Trim(string(sentence), "\n")
 	}
 
 	fmt.Print("Your Password > ")
@@ -50,7 +49,7 @@ func init() {
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		password = string(sentence)
+		password = strings.Trim(string(sentence), "\n")
 	}
 
 	login()
@@ -62,7 +61,7 @@ func init() {
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		mateSn = string(sentence)
+		mateSn = strings.Trim(string(sentence), "\n")
 	}
 	loadChatUserInfo()
 
@@ -85,6 +84,7 @@ func main() {
 	}()
 
 	go func() {
+		buf := bufio.NewReader(os.Stdin)
 		for true {
 			fmt.Print("Your Message > ")
 			sentence, err := buf.ReadBytes('\n')
@@ -127,13 +127,13 @@ func loadChatUserInfo() {
 	for _, key := range response.Body.PublicKeys {
 		matePubKeys[key.Index-1] = key.Content
 	}
-
 }
 
 // 登录账号
 func login() {
 	data := url.Values{}
-	data.Set("email", email)
+	data.Set("source", "email")
+	data.Set("symbol", email)
 	data.Set("password", password)
 	url := "http://" + GateWay + "/api/web/v1/user/login"
 	body := strings.NewReader(data.Encode())
@@ -153,6 +153,7 @@ func login() {
 	for i, friend := range response.Body.Friends {
 		fmt.Println("Friend %i sn : %s", i+1, friend.Sn)
 	}
+	token = response.Body.Tokens[0].Token
 }
 
 // 上传我的公钥

@@ -32,7 +32,6 @@ func (user *User) BeforeCreate(db *gorm.DB) {
 }
 
 func (user *User) AfterFind(db *gorm.DB) {
-	// user.setPublicKeys(db)
 }
 
 func (user *User) CompareHashAndPassword() bool {

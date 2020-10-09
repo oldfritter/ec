@@ -1,7 +1,6 @@
 package v1
 
 import (
-	// "fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
