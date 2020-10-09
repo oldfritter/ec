@@ -8,7 +8,7 @@ import (
 
 	"ec/config"
 	"ec/models"
-	"ec/utils"
+	// "ec/utils"
 )
 
 func initDb(name string) *gorm.DB {
@@ -23,8 +23,8 @@ func initDb(name string) *gorm.DB {
 	du, _ := time.ParseDuration(dbConfig.Get(config.Env.Model+"."+name+".timeout", "3600") + "s")
 	db.DB().SetConnMaxLifetime(du)
 	db.Exec("set transaction isolation level repeatable read")
-	file := utils.GetLogFile("gorm")
-	db.SetLogger(gorm.Logger{LogWriter: log.New(file, "\r\n", 0)})
+	// file := utils.GetLogFile("gorm")
+	// db.SetLogger(gorm.Logger{LogWriter: log.New(file, "\r\n", 0)})
 	db.LogMode(true)
 	return db
 }

@@ -8,21 +8,22 @@ import (
 )
 
 type User struct {
-	CommonModel
-	Sn             string `gorm:"type:varchar(16)" json:"sn"`       // 唯一编号
-	PasswordDigest string `gorm:"type:varchar(64)" json:"-"`        // 经加密的密码
-	Nickname       string `gorm:"type:varchar(32)" json:"nickname"` // 昵称
-	State          int    `gorm:"default:null" json:"state"`        // 状态
-	// GroupId int
+	gorm.Model
+	Sn             string `gorm:"type:varchar(16)"`
+	PasswordDigest string `gorm:"type:varchar(64)" json:"-"`
+	Nickname       string `gorm:"type:varchar(32)"`
+	State          int    `gorm:"default:null"`
 
-	Tokens     []*Token     `gorm:"ForeignKey:UserId" json:"tokens"`
-	PublicKeys []*PublicKey `gorm:"ForeignKey:UserId" json:"public_keys"`
-	Groups     []*Group     `gorm:"ForeignKey:MemberId" json:"groups"`
+	Tokens     []*Token     `gorm:"ForeignKey:UserId"`
+	PublicKeys []*PublicKey `gorm:"ForeignKey:UserId"`
+	Groups     []*Group     `gorm:"many2many:group_members"`
+	Friends    []*User      `gorm:"many2many:friend_ships"`
 
 	Password string `sql:"-" json:"-"`
 }
 
 func (user *User) BeforeCreate(db *gorm.DB) {
+	user.SetPasswordDigest()
 	count := 4
 	for count > 0 {
 		user.Sn = "DE" + utils.RandStringRunes(10) + "MO"
@@ -31,7 +32,7 @@ func (user *User) BeforeCreate(db *gorm.DB) {
 }
 
 func (user *User) AfterFind(db *gorm.DB) {
-	user.setPublicKeys(db)
+	// user.setPublicKeys(db)
 }
 
 func (user *User) CompareHashAndPassword() bool {

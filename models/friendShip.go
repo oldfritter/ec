@@ -1,10 +1,8 @@
 package models
 
 type FriendShip struct {
-	OwnerId  int
+	UserId   int
 	FriendId int
-	MarkName string `json:"mark_name"`
-
-	Owner  User `gorm:"ForeignKey:OwnerId"`
-	Friend User `gorm:"ForeignKey:FriendId"`
+	MarkName string
+	State    int `gorm:"default:null"` // 状态
 }

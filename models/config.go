@@ -1,14 +1,16 @@
 package models
 
 import (
+	"github.com/jinzhu/gorm"
+
 	"ec/config"
 )
 
 type Config struct {
-	CommonModel
-	Description string `json:"description"`
-	Key         string `json:"key"`
-	Value       string `json:"value"`
+	gorm.Model
+	Description string
+	Key         string
+	Value       string
 }
 
 func InitConfigInDB(db *GormDB) {

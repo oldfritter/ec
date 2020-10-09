@@ -13,14 +13,14 @@ const (
 )
 
 type Token struct {
-	CommonModel
-	Type         string    `gorm:"type:varchar(32)" json:"type"`  // 令牌类型 Tokens::Login, Tokens::AccessToken
-	Token        string    `gorm:"type:varchar(64)" json:"token"` // 授权令牌
+	gorm.Model
+	UserId       int
+	IsUsed       bool
+	Type         string    `gorm:"type:varchar(32)"` // 令牌类型 Tokens::Login, Tokens::AccessToken
+	Token        string    `gorm:"type:varchar(64)"`
 	RemoteIp     string    `gorm:"varchar(64)" json:"-"`
-	UserId       int       `json:"user_id"`                       // 所属用户
-	IsUsed       bool      `json:"is_used"`                       // 是否已使用
-	ExpireAt     time.Time `gorm:"default:null" json:"expire_at"` // 过期时间
-	LastVerifyAt time.Time `gorm:"default:null" json:"-"`         // 最后验证时间
+	ExpireAt     time.Time `gorm:"default:null"`
+	LastVerifyAt time.Time `gorm:"default:null" json:"-"`
 }
 
 func (token *Token) BeforeCreate(db *gorm.DB) {

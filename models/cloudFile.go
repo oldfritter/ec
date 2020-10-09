@@ -11,11 +11,11 @@ import (
 )
 
 type CloudFile struct {
-	State       int    `json:"state"`
-	StorageName string `json:"storage_name" gorm:"varchar(32)"`
-	StorageKey  string `json:"storage_key"`
-	OriginName  string `json:"origin_name"`
-	FileType    string `json:"file_type"`
+	State       int
+	StorageName string `gorm:"varchar(32)"`
+	StorageKey  string
+	OriginName  string
+	FileType    string
 }
 
 func (cf *CloudFile) Initialize() {

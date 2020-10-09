@@ -1,6 +1,7 @@
 package v1
 
 import (
+	// "fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -19,6 +20,8 @@ func UserLogin(c echo.Context) (err error) {
 	if db.Joins("INNER JOIN (identities) ON (identities.user_id = users.id)").
 		Where("identities.source = ?", params["source"]).
 		Where("identities.symbol = ?", params["symbol"]).
+		Preload("PublicKeys").
+		Preload("Groups").
 		First(&user).RecordNotFound() {
 		return utils.BuildError("2002")
 	} else {
@@ -30,8 +33,11 @@ func UserLogin(c echo.Context) (err error) {
 	// TODO:
 	// notify user
 
-	token := Token{UserId: user.Id, RemoteIp: c.RealIP()}
-	db.Save(&token)
+	db.Joins("INNER JOIN (friend_ships as fs) ON (fs.friend_id = users.id)").
+		Preload("PublicKeys").Where("fs.user_id = ?", user.ID).Find(&user.Friends)
+	token := Token{UserId: int(user.ID), RemoteIp: c.RealIP()}
+	db.Create(&token)
+	db.DbCommit()
 	user.Tokens = append(user.Tokens, &token)
 	response := utils.SuccessResponse
 	response.Body = user
@@ -65,11 +71,12 @@ func UserRegister(c echo.Context) (err error) {
 		user.Password = params["password"]
 		identity.Source = params["source"]
 		identity.Symbol = params["symbol"]
+		db.Save(&user)
 		identity.User = user
-		db.Save(&identity)
-		token := Token{UserId: user.Id, RemoteIp: c.RealIP()}
-		db.Save(&token)
+		token := Token{UserId: int(user.ID), RemoteIp: c.RealIP()}
+		db.Create(&token)
 		user.Tokens = append(user.Tokens, &token)
+		db.Save(&identity)
 		db.DbCommit()
 
 		response := utils.SuccessResponse

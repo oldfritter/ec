@@ -1,12 +1,15 @@
 package models
 
-type Group struct {
-	CommonModel
-	OwnerId  int    `json:"-"`
-	Owner    User   `gorm:"ForeignKey:OwnerId" json:"owner"`
-	Name     string `json:"name"`
-	Desc     string `json:"desc"`
-	MaxLimit int    `gorm:"default:5"`
+import (
+	"github.com/jinzhu/gorm"
+)
 
-	GroupMembers []*GroupMember `gorm:"ForeignKey:GroupId" json:"group_members"`
+type Group struct {
+	gorm.Model
+	UserId       int  `json:"-"`
+	User         User `gorm:"ForeignKey:UserId"`
+	MaxLimit     int  `gorm:"default:5"`
+	Name         string
+	Desc         string
+	GroupMembers []*GroupMember `gorm:"ForeignKey:GroupId"`
 }

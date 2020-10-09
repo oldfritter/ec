@@ -6,11 +6,11 @@ import (
 )
 
 type Device struct {
-	CommonModel
-	UserId    int    `json:"user_id"`                       // 设备所属用户
-	IsUsed    bool   `json:"is_used"`                       // 是否已经使用
-	Token     string `json:"token" gorm:"type:varchar(64)"` // 授权token
-	PublicKey string `json:"-"`                             // 公钥，用于公钥验签
+	gorm.Model
+	UserId    int    // 设备所属用户
+	IsUsed    bool   // 是否已经使用
+	PublicKey string // 公钥，用于公钥验签
+	Token     string `gorm:"type:varchar(64)"` // 授权token
 }
 
 func (device *Device) InitializeToken() {

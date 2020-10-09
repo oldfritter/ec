@@ -24,14 +24,12 @@ import (
 
 const (
 	GateWay = "127.0.0.1:9700"
-	// Token   = "2819c144d5946404c0516b6f817a960db37d4929"
-	// MateSn  = "234567"
 )
 
 var (
 	privKeys    [3]*rsa.PrivateKey
 	matePubKeys [3]string
-	Messages    = []string{"level", "content", "test"}
+	// Messages    = []string{"level", "content", "test"}
 
 	email, password, token, mateSn string
 )
@@ -59,41 +57,45 @@ func init() {
 	// 打印好友列表
 
 	// 择聊天对象
-	fmt.Print("Chat with > ")
+	fmt.Print("Chat with (sn)> ")
 	sentence, err = buf.ReadBytes('\n')
 	if err != nil {
 		fmt.Println(err)
 	} else {
 		mateSn = string(sentence)
 	}
-
-}
-
-func main() {
-	fmt.Println("Email: ", email)
-	fmt.Println("Password: ", password)
-	fmt.Println("mateSn: ", mateSn)
-
 	loadChatUserInfo()
+
 	for i, _ := range privKeys {
 		privKeys[i], _ = utils.GeneratePriKey(2048)
 	}
 	go func() {
 		uploadPubKeys()
 	}()
+}
+
+func main() {
 
 	go func() {
 		subscribeChatUserPubKeys()
 	}()
 
 	go func() {
-		for _, s := range Messages {
-			sendMessage(s)
-		}
+		subscribeMessage()
 	}()
 
 	go func() {
-		subscribeMessage()
+		for true {
+			fmt.Print("Your Message > ")
+			sentence, err := buf.ReadBytes('\n')
+			var message string
+			if err != nil {
+				fmt.Println(err)
+			} else {
+				message = string(sentence)
+			}
+			sendMessage(message)
+		}
 	}()
 
 	quit := make(chan os.Signal)
@@ -130,7 +132,27 @@ func loadChatUserInfo() {
 
 // 登录账号
 func login() {
-
+	data := url.Values{}
+	data.Set("email", email)
+	data.Set("password", password)
+	url := "http://" + GateWay + "/api/web/v1/user/login"
+	body := strings.NewReader(data.Encode())
+	req, err := http.NewRequest("POST", url, body)
+	if err != nil {
+		return
+	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	resp, err := http.DefaultClient.Do(req)
+	defer resp.Body.Close()
+	b, err := ioutil.ReadAll(resp.Body)
+	var response struct {
+		Head map[string]string `json:"head"`
+		Body models.User       `json:"body"`
+	}
+	json.Unmarshal(b, &response)
+	for i, friend := range response.Body.Friends {
+		fmt.Println("Friend %i sn : %s", i+1, friend.Sn)
+	}
 }
 
 // 上传我的公钥

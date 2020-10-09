@@ -1,10 +1,10 @@
 package models
 
 type GroupMember struct {
-	GroupId  int    `json:"-"`
-	MemberId int    `json:"-"`
-	MarkName string `json:"mark_name"`
+	GroupId  int `json:"-"`
+	UserId   int `json:"-"`
+	MarkName string
 
-	Group  Group `gorm:"ForeignKey:GroupId" json:"-"`
-	Member User  `gorm:"ForeignKey:MemberId" json:"member"`
+	Group Group `gorm:"ForeignKey:GroupId" json:"-"`
+	User  User  `gorm:"ForeignKey:UserId"`
 }

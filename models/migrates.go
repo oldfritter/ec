@@ -12,14 +12,14 @@ func MainMigrations() {
 
 	// friend_ship
 	mainDB.AutoMigrate(&FriendShip{})
-	mainDB.Model(&FriendShip{}).AddUniqueIndex("index_friend_ships_on_owner_id_and_friend_id", "owner_id", "friend_id")
+	mainDB.Model(&FriendShip{}).AddUniqueIndex("index_friend_ships_on_user_id_and_friend_id", "user_id", "friend_id")
 
 	// group
 	mainDB.AutoMigrate(&Group{})
 
 	// group_member
 	mainDB.AutoMigrate(&GroupMember{})
-	mainDB.Model(&GroupMember{}).AddUniqueIndex("index_group_members_on_member_id_and_group_id", "member_id", "group_id")
+	mainDB.Model(&GroupMember{}).AddUniqueIndex("index_group_members_on_user_id_and_group_id", "user_id", "group_id")
 
 	// identity
 	mainDB.AutoMigrate(&Identity{})

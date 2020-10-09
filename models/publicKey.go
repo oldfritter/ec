@@ -8,10 +8,10 @@ import (
 )
 
 type PublicKey struct {
-	Index   int    `json:"index"`
-	UserId  int    `json:"user_id"`
-	UserSn  string `json:"user_sn"`
-	Content string `json:"content" gorm:"type:text"`
+	Index   int
+	UserId  int
+	UserSn  string
+	Content string `gorm:"type:text"`
 }
 
 func (pk *PublicKey) AfterSave() {
