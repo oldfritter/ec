@@ -32,7 +32,7 @@ func UserLogin(c echo.Context) (err error) {
 
 	token := Token{UserId: user.Id, RemoteIp: c.RealIP()}
 	db.Save(&token)
-	user.Tokens = append(user.Tokens, token)
+	user.Tokens = append(user.Tokens, &token)
 	response := utils.SuccessResponse
 	response.Body = user
 	return c.JSON(http.StatusOK, response)
@@ -69,7 +69,7 @@ func UserRegister(c echo.Context) (err error) {
 		db.Save(&identity)
 		token := Token{UserId: user.Id, RemoteIp: c.RealIP()}
 		db.Save(&token)
-		user.Tokens = append(user.Tokens, token)
+		user.Tokens = append(user.Tokens, &token)
 		db.DbCommit()
 
 		response := utils.SuccessResponse

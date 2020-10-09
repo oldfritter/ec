@@ -67,5 +67,5 @@ func checkSign(context echo.Context, params map[string]string) (allow bool) {
 
 // TODO: IP检测
 func checkIP(context echo.Context, params map[string]string) bool {
-	return
+	return false
 }
