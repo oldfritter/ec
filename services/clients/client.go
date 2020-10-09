@@ -220,7 +220,9 @@ func subscribeMessage() {
 			json.Unmarshal(m, &ms)
 			decoded, _ := base64.StdEncoding.DecodeString(ms.Content)
 			message, _ := utils.PrivateKeyDecrypt([]byte(decoded), privKeys[0])
-			log.Println("message:", string(message))
+			fmt.Println("")
+			fmt.Println("Received Message:", string(message))
+			fmt.Print("Your Message > ")
 		}
 	}()
 

@@ -3,7 +3,6 @@ package v1
 import (
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/labstack/echo/v4"
 
@@ -21,14 +20,14 @@ func PubKeyUpload(c echo.Context) (err error) {
 	var publicKey PublicKey
 	if db.First(&publicKey, map[string]interface{}{"index": params["index"], "user_sn": user.Sn}).RecordNotFound() {
 		publicKey.UserId = int(user.ID)
-		publicKey.Content = strings.Replace(params["content"], "\n", "", -1)
+		publicKey.Content = params["content"]
 		db.Save(&publicKey)
 	}
 	index, _ := strconv.Atoi(params["index"])
 	db.Model(&publicKey).Updates(PublicKey{
 		Index:   index,
 		UserSn:  user.Sn,
-		Content: strings.Replace(params["content"], "\n", "", -1),
+		Content: params["content"],
 	})
 	db.DbCommit()
 	response := utils.SuccessResponse
