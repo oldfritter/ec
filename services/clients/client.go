@@ -92,7 +92,7 @@ func main() {
 			if err != nil {
 				fmt.Println(err)
 			} else {
-				message = string(sentence)
+				message = strings.Trim(string(sentence), "\n")
 			}
 			sendMessage(message)
 		}
@@ -219,9 +219,9 @@ func subscribeMessage() {
 			var ms models.Message
 			json.Unmarshal(m, &ms)
 			decoded, _ := base64.StdEncoding.DecodeString(ms.Content)
-			message, _ := utils.PrivateKeyDecrypt(string(decoded), privKeys[0])
+			mess, _ := utils.PrivateKeyDecrypt(string(decoded), privKeys[0])
 			fmt.Println("")
-			fmt.Println("Received Message:", string(message))
+			fmt.Println("Received Message:", mess)
 			fmt.Print("Your Message > ")
 		}
 	}()

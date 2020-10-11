@@ -4,8 +4,10 @@ import (
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
+	"encoding/base64"
 	"encoding/pem"
 	"errors"
+	// "fmt"
 	"strings"
 )
 
@@ -33,28 +35,31 @@ func PublicKeyEncrypt(message, publicKey string) (encrypted []byte, err error) {
 	}
 	strs = append(strs, str)
 	var e []byte
+	var en string
 	for i, str := range strs {
 		if i > 0 {
-			encrypted = append(encrypted, []byte("|")...)
+			en = en + "&"
 		}
 		e, err = rsa.EncryptPKCS1v15(rand.Reader, pub, []byte(str))
 		if err != nil {
 			return
 		}
-		encrypted = append(encrypted, e...)
+		en = en + base64.StdEncoding.EncodeToString(e)
+		encrypted = []byte(en)
 	}
 	return
 }
 
-func PrivateKeyDecrypt(encrypted string, privateKey *rsa.PrivateKey) (message []byte, err error) {
-	ms := strings.Split(encrypted, "|")
+func PrivateKeyDecrypt(encrypted string, privateKey *rsa.PrivateKey) (message string, err error) {
+	decoded, _ := base64.StdEncoding.DecodeString(encrypted)
+	ms := strings.Split(string(decoded), "&")
 	for _, m := range ms {
 		var s []byte
 		s, err = rsa.DecryptPKCS1v15(rand.Reader, privateKey, []byte(m))
 		if err != nil {
 			return
 		}
-		message = append(message, s...)
+		message += string(s)
 	}
 	return
 }
