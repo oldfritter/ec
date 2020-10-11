@@ -7,7 +7,6 @@ import (
 	"encoding/base64"
 	"encoding/pem"
 	"errors"
-	// "fmt"
 	"strings"
 )
 
@@ -34,7 +33,6 @@ func PublicKeyEncrypt(message, publicKey string) (encrypted string, err error) {
 		str = str + string(b)
 	}
 	strs = append(strs, str)
-	// fmt.Println("strs: ", strs)
 	var e []byte
 	for i, str := range strs {
 		if i > 0 {
@@ -51,15 +49,10 @@ func PublicKeyEncrypt(message, publicKey string) (encrypted string, err error) {
 
 func PrivateKeyDecrypt(encrypted string, privateKey *rsa.PrivateKey) (message string, err error) {
 	ms := strings.Split(encrypted, "---&---")
-	// fmt.Println("ms: ", ms)
-	// fmt.Println("ms len: ", len(ms))
 	for _, m := range ms {
-		// fmt.Println("m: ", m)
 		var s []byte
 		d, _ := base64.StdEncoding.DecodeString(m)
-		// fmt.Println("d: ", d)
 		s, err = rsa.DecryptPKCS1v15(rand.Reader, privateKey, []byte(d))
-		// fmt.Println("s: ", string(s))
 		if err != nil {
 			return
 		}
