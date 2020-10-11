@@ -178,9 +178,9 @@ func uploadPubKeys() {
 
 // 发送消息
 func sendMessage(content string) {
-	encryptedContent, _ := utils.PublicKeyEncrypt([]byte(content), string(matePubKeys[0]))
+	encryptedContent, _ := utils.PublicKeyEncrypt(content, matePubKeys[0])
 	data := url.Values{}
-	data.Set("level", "3")
+	data.Set("level", "1")
 	data.Set("content", base64.StdEncoding.EncodeToString(encryptedContent))
 	data.Set("receiver_sn", mateSn)
 	url := "http://" + GateWay + "/api/web/v1/message/upload"
@@ -219,7 +219,7 @@ func subscribeMessage() {
 			var ms models.Message
 			json.Unmarshal(m, &ms)
 			decoded, _ := base64.StdEncoding.DecodeString(ms.Content)
-			message, _ := utils.PrivateKeyDecrypt([]byte(decoded), privKeys[0])
+			message, _ := utils.PrivateKeyDecrypt(string(decoded), privKeys[0])
 			fmt.Println("")
 			fmt.Println("Received Message:", string(message))
 			fmt.Print("Your Message > ")
