@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-func PublicKeyEncrypt(message, publicKey string) (encrypted []byte, err error) {
+func PublicKeyEncrypt(message, publicKey string) (encrypted string, err error) {
 	block, _ := pem.Decode([]byte(publicKey))
 	if block == nil {
 		err = errors.New("public key error")
@@ -34,28 +34,32 @@ func PublicKeyEncrypt(message, publicKey string) (encrypted []byte, err error) {
 		str = str + string(b)
 	}
 	strs = append(strs, str)
+	// fmt.Println("strs: ", strs)
 	var e []byte
-	var en string
 	for i, str := range strs {
 		if i > 0 {
-			en = en + "&"
+			encrypted = encrypted + "---&---"
 		}
 		e, err = rsa.EncryptPKCS1v15(rand.Reader, pub, []byte(str))
 		if err != nil {
 			return
 		}
-		en = en + base64.StdEncoding.EncodeToString(e)
-		encrypted = []byte(en)
+		encrypted += base64.StdEncoding.EncodeToString(e)
 	}
 	return
 }
 
 func PrivateKeyDecrypt(encrypted string, privateKey *rsa.PrivateKey) (message string, err error) {
-	decoded, _ := base64.StdEncoding.DecodeString(encrypted)
-	ms := strings.Split(string(decoded), "&")
+	ms := strings.Split(encrypted, "---&---")
+	// fmt.Println("ms: ", ms)
+	// fmt.Println("ms len: ", len(ms))
 	for _, m := range ms {
+		// fmt.Println("m: ", m)
 		var s []byte
-		s, err = rsa.DecryptPKCS1v15(rand.Reader, privateKey, []byte(m))
+		d, _ := base64.StdEncoding.DecodeString(m)
+		// fmt.Println("d: ", d)
+		s, err = rsa.DecryptPKCS1v15(rand.Reader, privateKey, []byte(d))
+		// fmt.Println("s: ", string(s))
 		if err != nil {
 			return
 		}

@@ -3,7 +3,7 @@ package main
 import (
 	"bufio"
 	"crypto/rsa"
-	"encoding/base64"
+	// "encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -181,7 +181,8 @@ func sendMessage(content string) {
 	encryptedContent, _ := utils.PublicKeyEncrypt(content, matePubKeys[0])
 	data := url.Values{}
 	data.Set("level", "1")
-	data.Set("content", base64.StdEncoding.EncodeToString(encryptedContent))
+	// data.Set("content", base64.StdEncoding.EncodeToString([]byte(encryptedContent)))
+	data.Set("content", encryptedContent)
 	data.Set("receiver_sn", mateSn)
 	url := "http://" + GateWay + "/api/web/v1/message/upload"
 	body := strings.NewReader(data.Encode())
@@ -218,8 +219,8 @@ func subscribeMessage() {
 			}
 			var ms models.Message
 			json.Unmarshal(m, &ms)
-			decoded, _ := base64.StdEncoding.DecodeString(ms.Content)
-			mess, _ := utils.PrivateKeyDecrypt(string(decoded), privKeys[0])
+			mess, _ := utils.PrivateKeyDecrypt(ms.Content, privKeys[0])
+			// message, _ := base64.StdEncoding.DecodeString(mess)
 			fmt.Println("")
 			fmt.Println("Received Message:", mess)
 			fmt.Print("Your Message > ")
