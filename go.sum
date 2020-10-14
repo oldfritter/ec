@@ -66,8 +66,8 @@ github.com/newrelic/go-agent v3.8.0+incompatible h1:IxJKEK7SihVTXTDIpjl2GW2x3kl4
 github.com/newrelic/go-agent v3.8.0+incompatible/go.mod h1:a8Fv1b/fYhFSReoTU6HDkTYIMZeSVNffmoS726Y0LzQ=
 github.com/oldfritter/echo-middleware/v4 v4.0.3 h1:VznFQaDzwYgpJUvvDgW80Cgq/09ONSYc0ATRXDj6604=
 github.com/oldfritter/echo-middleware/v4 v4.0.3/go.mod h1:cY56m1s4VbzRUtDiv4i2UicfgDqQ4qk0HRNY/fq/VFQ=
-github.com/oldfritter/sneaker-go v1.1.0 h1:J5bXkAx73eVylAgqM+4x8oNdoHKmAHK9IRmTyNJtRnU=
-github.com/oldfritter/sneaker-go v1.1.0/go.mod h1:q9+KC43OfLklfiKffi11et1HpMufAyD5q3mI/cdpOHw=
+github.com/oldfritter/sneaker-go/v3 v3.0.2 h1:gxSMDuUxGFNzoV3SE65I1OlUaS5NRZS3jJDiT3bQZLA=
+github.com/oldfritter/sneaker-go/v3 v3.0.2/go.mod h1:I0YXd0M0D/xc1M4LsDriRf0oBwuD7TAvAH2w9RuvHqc=
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/qiniu/api.v7 v7.2.5+incompatible h1:6KKaGt7MbFzVGSniwzv7qsM/Qv0or4SkRJfmak8LqZE=
