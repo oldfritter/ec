@@ -165,7 +165,7 @@ func uploadPubKeys() {
 		data := url.Values{}
 		data.Set("index", strconv.Itoa(i+1))
 		data.Set("content", string(b))
-		data.Set("token", token)
+		// data.Set("token", token)
 		url := "https://" + GateWay + "/api/web/v1/pub_key/upload"
 		body := strings.NewReader(data.Encode())
 		req, err := http.NewRequest("POST", url, body)

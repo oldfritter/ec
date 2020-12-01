@@ -1,0 +1,220 @@
+{
+	"info": {
+		"_postman_id": "92a5f645-851f-49a1-ad05-3d9789d712f7",
+		"name": "EC",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "登录",
+			"protocolProfileBehavior": {
+				"followRedirects": false,
+				"followOriginalHttpMethod": false,
+				"followAuthorizationHeader": false
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "symbol",
+							"value": "leon@gmail.com",
+							"description": "账号"
+						},
+						{
+							"key": "password",
+							"value": "123456",
+							"description": "密码"
+						},
+						{
+							"key": "source",
+							"value": "email",
+							"description": "账号类型"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://www.greenlemon.site/api/web/v1/user/login",
+					"protocol": "https",
+					"host": [
+						"www",
+						"greenlemon",
+						"site"
+					],
+					"path": [
+						"api",
+						"web",
+						"v1",
+						"user",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "发送消息",
+			"protocolProfileBehavior": {
+				"followRedirects": false,
+				"followOriginalHttpMethod": false,
+				"followAuthorizationHeader": false
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "Authorization",
+						"value": "LZkOU4CyKW49Eg3hSfUIEnyIG68MTJ5QCGztfCGMxp7rpa7023kfxcUSlo1cLVtU"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "level",
+							"value": "1",
+							"description": "一层加密"
+						},
+						{
+							"key": "content",
+							"value": "",
+							"description": "密文"
+						},
+						{
+							"key": "receiver_sn",
+							"value": "",
+							"description": "接受者"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://www.greenlemon.site/api/web/v1/message/upload",
+					"protocol": "https",
+					"host": [
+						"www",
+						"greenlemon",
+						"site"
+					],
+					"path": [
+						"api",
+						"web",
+						"v1",
+						"message",
+						"upload"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "上传我的公钥",
+			"protocolProfileBehavior": {
+				"followRedirects": false,
+				"followOriginalHttpMethod": false,
+				"followAuthorizationHeader": false
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "Authorization",
+						"value": "LZkOU4CyKW49Eg3hSfUIEnyIG68MTJ5QCGztfCGMxp7rpa7023kfxcUSlo1cLVtU"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "index",
+							"value": "1",
+							"description": "第一把公钥"
+						},
+						{
+							"key": "content",
+							"value": "\"-----BEGIN PUBLIC KEY-----\\nMIIBCgKCAQEA3AvOTY7vrx+J8BpKy6pUH6anAxsdEwuCHeVn+mw4POJRzfW/19gJ\\n+C0QLHy579nY59yeeekLjzKnWH2saZNTSux2YALAIx5SRL1YmloRjg8sbbXrZTxq\\nzI+rU+N4azU7/1xn3JP29Oa4asG3lXAu+XiornvcuoepYlkMzR/RKmlHhrdyCTT/\\nZ0HfwlwKQrIB8lvYjGsIodhBp2tpuBTBKFUlvj4si5HYX9g91stNOp0cNu8ckWiv\\n56aSoq40zE5sPpFWzZY9LWootswWUtINd3KIt01fHLegyiFts9M/USumPWknRZt5\\nOqHufdKMEke0wVpDHphiNDszgO4brQ1HewIDAQAB\\n-----END PUBLIC KEY-----\\n\"",
+							"description": "公钥"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://www.greenlemon.site/api/web/v1/pub_key/upload",
+					"protocol": "https",
+					"host": [
+						"www",
+						"greenlemon",
+						"site"
+					],
+					"path": [
+						"api",
+						"web",
+						"v1",
+						"pub_key",
+						"upload"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "载入指定用户的公钥",
+			"protocolProfileBehavior": {
+				"followRedirects": false,
+				"followOriginalHttpMethod": false,
+				"followAuthorizationHeader": false
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "LZkOU4CyKW49Eg3hSfUIEnyIG68MTJ5QCGztfCGMxp7rpa7023kfxcUSlo1cLVtU"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "sn",
+							"value": "DEC3zkKDLmFEMO",
+							"description": "聊天对象的编码",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://www.greenlemon.site/api/web/v1/user/info",
+					"protocol": "https",
+					"host": [
+						"www",
+						"greenlemon",
+						"site"
+					],
+					"path": [
+						"api",
+						"web",
+						"v1",
+						"user",
+						"info"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
