@@ -27,8 +27,8 @@ const (
 )
 
 var (
-	privKeys    [3]*rsa.PrivateKey
-	matePubKeys [3]string
+	privKeys    [1]*rsa.PrivateKey
+	matePubKeys [1]string
 
 	email, password, token, mateSn string
 )
@@ -55,14 +55,6 @@ func init() {
 	login()
 	// 打印好友列表
 
-	// // 择聊天对象
-	// fmt.Print("Chat with (sn)> ")
-	//   sentence, err = buf.ReadBytes('\n')
-	//   if err != nil {
-	//     fmt.Println(err)
-	//   } else {
-	//     mateSn = strings.Trim(string(sentence), "\n")
-	//   }
 	loadChatUserInfo()
 
 	for i, _ := range privKeys {
@@ -108,7 +100,7 @@ func main() {
 func loadChatUserInfo() {
 	data := url.Values{}
 	data.Set("sn", mateSn)
-	url := "https://" + GateWay + "/api/web/v1/user/info"
+	url := "http://" + GateWay + "/api/web/v1/user/info"
 	body := strings.NewReader(data.Encode())
 	req, err := http.NewRequest("POST", url, body)
 	if err != nil {
@@ -125,7 +117,7 @@ func loadChatUserInfo() {
 	}
 	json.Unmarshal(b, &response)
 	for _, key := range response.Body.PublicKeys {
-		matePubKeys[key.Index-1] = key.Content
+		matePubKeys[key.Index] = key.Content
 	}
 }
 
@@ -135,7 +127,7 @@ func login() {
 	data.Set("source", "email")
 	data.Set("symbol", email)
 	data.Set("password", password)
-	url := "https://" + GateWay + "/api/web/v1/user/login"
+	url := "http://" + GateWay + "/api/web/v1/user/login"
 	body := strings.NewReader(data.Encode())
 	req, err := http.NewRequest("POST", url, body)
 	if err != nil {
@@ -163,10 +155,9 @@ func uploadPubKeys() {
 	for i, key := range privKeys {
 		b, _ := utils.GeneratePubKey(key)
 		data := url.Values{}
-		data.Set("index", strconv.Itoa(i+1))
+		data.Set("index", strconv.Itoa(i))
 		data.Set("content", string(b))
-		// data.Set("token", token)
-		url := "https://" + GateWay + "/api/web/v1/pub_key/upload"
+		url := "http://" + GateWay + "/api/web/v1/pub_key/upload"
 		body := strings.NewReader(data.Encode())
 		req, err := http.NewRequest("POST", url, body)
 		if err != nil {
@@ -182,12 +173,16 @@ func uploadPubKeys() {
 func sendMessage(content string) {
 	data := url.Values{}
 	for i, key := range matePubKeys {
-		content, _ = utils.PublicKeyEncrypt(base64.StdEncoding.EncodeToString([]byte(content)), key)
-		data.Set("level", strconv.Itoa(i+1))
+		var err error
+		content, err = utils.PublicKeyEncrypt(base64.StdEncoding.EncodeToString([]byte(content)), key)
+		if err != nil {
+			fmt.Println("err send: ", err)
+		}
+		data.Set("level", strconv.Itoa(i))
 	}
 	data.Set("content", content)
 	data.Set("receiver_sn", mateSn)
-	url := "https://" + GateWay + "/api/web/v1/message/upload"
+	url := "http://" + GateWay + "/api/web/v1/message/upload"
 	body := strings.NewReader(data.Encode())
 	req, err := http.NewRequest("POST", url, body)
 	if err != nil {
@@ -200,7 +195,7 @@ func sendMessage(content string) {
 
 // 订阅发给我的消息
 func subscribeMessage() {
-	u := url.URL{Scheme: "wss", Host: GateWay, Path: "/api/ws/v1/message/listen"}
+	u := url.URL{Scheme: "ws", Host: GateWay, Path: "/api/ws/v1/message/listen"}
 	log.Println("connecting to ", u.String())
 	header := http.Header{}
 	header.Add("Authorization", token)
@@ -224,7 +219,7 @@ func subscribeMessage() {
 			json.Unmarshal(m, &ms)
 			message, level := ms.Content, ms.Level
 			for i, _ := range privKeys {
-				mess, _ := utils.PrivateKeyDecrypt(message, privKeys[level-i-1])
+				mess, _ := utils.PrivateKeyDecrypt(message, privKeys[level-i])
 				b, _ := base64.StdEncoding.DecodeString(mess)
 				message = string(b)
 			}
@@ -254,7 +249,7 @@ func subscribeMessage() {
 
 // 订阅对方的公钥更新
 func subscribeChatUserPubKeys() {
-	u := url.URL{Scheme: "wss", Host: GateWay, Path: "/api/ws/v1/public_key/listen"}
+	u := url.URL{Scheme: "ws", Host: GateWay, Path: "/api/ws/v1/public_key/listen"}
 	log.Println("connecting to ", u.String())
 	header := http.Header{}
 	header.Add("Authorization", token)
@@ -281,7 +276,7 @@ func subscribeChatUserPubKeys() {
 			}
 			var publicKey models.PublicKey
 			json.Unmarshal(m, &publicKey)
-			matePubKeys[publicKey.Index-1] = publicKey.Content
+			matePubKeys[publicKey.Index] = publicKey.Content
 		}
 	}()
 

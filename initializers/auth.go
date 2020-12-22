@@ -78,9 +78,9 @@ func Auth(next echo.HandlerFunc) echo.HandlerFunc {
 		if currentApiInterface.Path == "" {
 			return utils.BuildError("1025")
 		}
-		if context.Request().Header.Get("Authorization") == "" {
+		if context.Request().Header.Get("Authorization") == "" && params["authorization"] == "" {
 			return utils.BuildError("1026")
-		} else {
+		} else if params["authorization"] == "" {
 			params["authorization"] = context.Request().Header.Get("Authorization")
 		}
 		params["device"] = context.Request().Header.Get("Device")

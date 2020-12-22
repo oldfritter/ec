@@ -22,7 +22,12 @@ const (
 // 获取消息
 func MessageListen(e echo.Context) (err error) {
 	c, err := helpers.InitWsConn(e, messagePongWait)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 	defer c.Close()
+
 	user := e.Get("current_user").(models.User)
 	ctx, cancel := context.WithCancel(context.Background())
 	err = config.ListenPubSubChannels(
@@ -49,7 +54,6 @@ func MessageListen(e echo.Context) (err error) {
 	)
 	if err != nil {
 		log.Println(err)
-		return
 	}
 	return
 }

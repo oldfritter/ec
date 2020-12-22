@@ -11,7 +11,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	newrelic "github.com/oldfritter/echo-middleware/v4"
+	"github.com/newrelic/go-agent/v3/integrations/nrecho-v4"
+	"github.com/newrelic/go-agent/v3/newrelic"
 
 	envConfig "ec/config"
 	"ec/config/cloudStorages"
@@ -25,12 +26,28 @@ func main() {
 	initialize()
 
 	e := echo.New()
+
 	if envConfig.Env.Newrelic.AppName != "" && envConfig.Env.Newrelic.LicenseKey != "" {
-		e.Use(newrelic.NewRelic(envConfig.Env.Newrelic.AppName, envConfig.Env.Newrelic.LicenseKey))
+		app, err := newrelic.NewApplication(
+			newrelic.ConfigAppName(envConfig.Env.Newrelic.AppName),
+			newrelic.ConfigLicense(envConfig.Env.Newrelic.LicenseKey),
+		)
+		if nil != err {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		e.Use(nrecho.Middleware(app))
 	}
+
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	e.Use(initializers.Auth)
+
+	DefaultCORSConfig := middleware.CORSConfig{
+		AllowOrigins: []string{"*"},
+		AllowMethods: []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete},
+	}
+	e.Use(middleware.CORSWithConfig(DefaultCORSConfig))
 
 	routes.SetWebInterfaces(e)
 	routes.SetWsInterfaces(e)

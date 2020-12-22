@@ -5,46 +5,46 @@ import (
 )
 
 type Response struct {
-	Head map[string]string `json:"head"`
-	Body interface{}       `json:"body"`
+	Head map[string]string `json:"Head"`
+	Body interface{}       `json:"Body"`
 }
 
 type ArrayBodyStruct struct {
-	CurrentPage  int         `json:"current_page"`
-	TotalPages   int         `json:"total_pages"`
-	PerPage      int         `json:"per_page"`
-	NextPage     int         `json:"next_page"`
-	PreviousPage int         `json:"previous_page"`
-	Data         interface{} `json:"data"`
+	CurrentPage  int         `json:"CurrentPage"`
+	TotalPages   int         `json:"TotalPages"`
+	PerPage      int         `json:"PerPage"`
+	NextPage     int         `json:"NextPage"`
+	PreviousPage int         `json:"PreviousPage"`
+	Data         interface{} `json:"Data"`
 }
 
 type ArrayDataResponse struct {
-	Head map[string]string `json:"head"`
-	Body interface{}       `json:"body"`
+	Head map[string]string `json:"Head"`
+	Body interface{}       `json:"Body"`
 }
 
 var (
-	SuccessResponse = Response{Head: map[string]string{"code": "1000", "msg": "Success."}}
-	ArrayResponse   = ArrayDataResponse{Head: map[string]string{"code": "1000", "msg": "Success."}}
+	SuccessResponse = Response{Head: map[string]string{"Code": "1000", "Msg": "Success."}}
+	ArrayResponse   = ArrayDataResponse{Head: map[string]string{"Code": "1000", "Msg": "Success."}}
 )
 
 func BuildError(code string) Response {
-	return Response{Head: map[string]string{"code": code}}
+	return Response{Head: map[string]string{"Code": code}}
 }
 
 func (errorResponse Response) Error() string {
-	return fmt.Sprintf("code: %s; msg: %s", errorResponse.Head["code"], errorResponse.Head["msg"])
+	return fmt.Sprintf("Code: %s; Msg: %s", errorResponse.Head["Code"], errorResponse.Head["Msg"])
 }
 
-func (arrayResponse *ArrayDataResponse) Init(data interface{}, page, count, per_page int) {
-	total_page := count / per_page
-	if (count % per_page) != 0 {
-		total_page += 1
+func (arrayResponse *ArrayDataResponse) Init(data interface{}, page, count, perPage int) {
+	totalPage := count / perPage
+	if (count % perPage) != 0 {
+		totalPage += 1
 	}
 
 	nextPage := page + 1
-	if nextPage > total_page {
-		nextPage = total_page
+	if nextPage > totalPage {
+		nextPage = totalPage
 	}
 	previousPage := page - 1
 	if previousPage < 1 {
@@ -55,8 +55,8 @@ func (arrayResponse *ArrayDataResponse) Init(data interface{}, page, count, per_
 
 	body.Data = data
 	body.CurrentPage = page
-	body.TotalPages = total_page
-	body.PerPage = per_page
+	body.TotalPages = totalPage
+	body.PerPage = perPage
 	body.NextPage = nextPage
 	body.PreviousPage = previousPage
 

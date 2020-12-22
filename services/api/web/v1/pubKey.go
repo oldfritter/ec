@@ -17,18 +17,19 @@ func PubKeyUpload(c echo.Context) (err error) {
 	db := models.MainDbBegin()
 	defer db.DbRollback()
 	user := c.Get("current_user").(models.User)
-	var publicKey models.PublicKey
-	if db.First(&publicKey, map[string]interface{}{"index": params["index"], "user_sn": user.Sn}).RecordNotFound() {
-		publicKey.UserId = int(user.ID)
-		publicKey.Content = params["content"]
-		db.Save(&publicKey)
-	}
+	var re struct{ Max int64 }
+	db.Model(&models.Contract{}).Where("user_id = ?", user.ID).Where("expired_at > NOW()").Select("Max(level) as max").Scan(&re)
 	index, _ := strconv.Atoi(params["index"])
+	if int64(index) > re.Max {
+		return utils.BuildError("2004")
+	}
+	var publicKey models.PublicKey
 	db.FirstOrInit(&publicKey, models.PublicKey{
-		Index:   index,
-		UserSn:  user.Sn,
-		Content: params["content"],
+		UserId: int(user.ID),
+		Index:  index,
+		UserSn: user.Sn,
 	})
+	publicKey.Content = params["content"]
 	db.Save(&publicKey)
 	db.DbCommit()
 	response := utils.SuccessResponse

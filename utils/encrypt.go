@@ -7,6 +7,7 @@ import (
 	"encoding/base64"
 	"encoding/pem"
 	"errors"
+	"fmt"
 	"strings"
 )
 
@@ -16,10 +17,12 @@ func PublicKeyEncrypt(message, publicKey string) (encrypted string, err error) {
 		err = errors.New("public key error")
 		return
 	}
-	pub, err := x509.ParsePKCS1PublicKey(block.Bytes)
+	p, err := x509.ParsePKIXPublicKey(block.Bytes)
 	if err != nil {
+		fmt.Println("err: ", err)
 		return
 	}
+	pub := p.(*rsa.PublicKey)
 	var strs []string
 	var str string
 	for i, b := range []byte(message) {
@@ -52,8 +55,9 @@ func PrivateKeyDecrypt(encrypted string, privateKey *rsa.PrivateKey) (message st
 	for _, m := range ms {
 		var s []byte
 		d, _ := base64.StdEncoding.DecodeString(m)
-		s, err = rsa.DecryptPKCS1v15(rand.Reader, privateKey, []byte(d))
+		s, err = rsa.DecryptPKCS1v15(rand.Reader, privateKey, d)
 		if err != nil {
+			fmt.Println("err : ", err)
 			return
 		}
 		message += string(s)
@@ -67,9 +71,14 @@ func GeneratePriKey(bits int) (*rsa.PrivateKey, error) {
 }
 
 func GeneratePubKey(priKey *rsa.PrivateKey) ([]byte, error) {
+	pub, err := x509.MarshalPKIXPublicKey(&priKey.PublicKey)
+	if err != nil {
+		fmt.Println("err: ", err)
+		return nil, err
+	}
 	block := &pem.Block{
 		Type:  "PUBLIC KEY",
-		Bytes: x509.MarshalPKCS1PublicKey(&priKey.PublicKey),
+		Bytes: pub,
 	}
 	return pem.EncodeToMemory(block), nil
 }

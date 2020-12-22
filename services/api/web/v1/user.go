@@ -20,9 +20,7 @@ func UserLogin(c echo.Context) (err error) {
 	if db.Joins("INNER JOIN (identities) ON (identities.user_id = users.id)").
 		Where("identities.source = ?", params["source"]).
 		Where("identities.symbol = ?", params["symbol"]).
-		Preload("PublicKeys", func(db *gorm.DB) *gorm.DB {
-			return db.Order("public_keys.index ASC")
-		}).Preload("Groups").
+		Preload("Groups").
 		First(&user).RecordNotFound() {
 		return utils.BuildError("2002")
 	} else {
@@ -35,7 +33,9 @@ func UserLogin(c echo.Context) (err error) {
 	// notify user
 
 	db.Joins("INNER JOIN (friend_ships as fs) ON (fs.friend_id = users.id)").
-		Preload("PublicKeys").Where("fs.user_id = ?", user.ID).Find(&user.Friends)
+		Preload("PublicKeys", func(db *gorm.DB) *gorm.DB {
+			return db.Order("public_keys.index ASC")
+		}).Where("fs.user_id = ?", user.ID).Find(&user.Friends)
 	token := models.Token{UserId: int(user.ID), RemoteIp: c.RealIP()}
 	db.Create(&token)
 	db.DbCommit()
@@ -47,14 +47,22 @@ func UserLogin(c echo.Context) (err error) {
 
 func UserInfo(c echo.Context) (err error) {
 	params := helpers.StringParams(c)
-	db := config.MainDb
 	var user models.User
-	if db.Where("sn = ?", params["sn"]).
+	if config.MainDb.Where("sn = ?", params["sn"]).
 		Preload("PublicKeys", func(db *gorm.DB) *gorm.DB {
 			return db.Order("public_keys.index ASC")
 		}).First(&user).RecordNotFound() {
 		return utils.BuildError("2001")
 	}
+	response := utils.SuccessResponse
+	response.Body = user
+	return c.JSON(http.StatusOK, response)
+}
+
+func UserMe(c echo.Context) (err error) {
+	user := c.Get("current_user").(models.User)
+	config.MainDb.Joins("INNER JOIN (friend_ships as fs) ON (fs.friend_id = users.id)").
+		Preload("PublicKeys").Where("fs.user_id = ?", user.ID).Find(&user.Friends)
 	response := utils.SuccessResponse
 	response.Body = user
 	return c.JSON(http.StatusOK, response)

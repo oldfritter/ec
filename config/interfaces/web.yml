@@ -1,6 +1,12 @@
 ---
 # Web --------------------------------------------------------------------------------------
 ## user
+- path: /api/web/v1/user/me
+  method: GET
+  auth: true
+- path: /api/web/v1/user/me
+  method: POST
+  auth: true
 - path: /api/web/v1/user/info
   method: GET
   auth: true

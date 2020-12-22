@@ -18,5 +18,5 @@ func InitWorkers() {
 		log.Fatal(err)
 	}
 	yaml.Unmarshal(content, &config.AllWorkers)
-	sneaker.InitializeTreatWorker()
+	sneaker.InitializeContractRenewal()
 }

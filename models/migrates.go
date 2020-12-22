@@ -7,6 +7,9 @@ func MainMigrations() {
 	// config
 	mainDB.AutoMigrate(&Config{})
 
+	// contract
+	mainDB.AutoMigrate(&Contract{})
+
 	// device
 	mainDB.AutoMigrate(&Device{})
 

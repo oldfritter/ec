@@ -10,20 +10,20 @@ import (
 	"ec/config"
 )
 
-func InitializeTreatWorker() {
+func InitializeContractRenewal() {
 	for _, w := range config.AllWorkers {
-		if w.Name == "TreatWorker" {
-			config.AllWorkerIs = append(config.AllWorkerIs, &TreatWorker{w})
+		if w.Name == "ContractRenewal" {
+			config.AllWorkerIs = append(config.AllWorkerIs, &ContractRenewal{w})
 			return
 		}
 	}
 }
 
-type TreatWorker struct {
+type ContractRenewal struct {
 	sneaker.Worker
 }
 
-func (worker *TreatWorker) Work(payloadJson *[]byte) (err error) {
+func (worker *ContractRenewal) Work(payloadJson *[]byte) (err error) {
 	fmt.Println("start payload: ", string(*payloadJson))
 	start := time.Now().UnixNano()
 	var payload struct {
