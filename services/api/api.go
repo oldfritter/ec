@@ -43,11 +43,11 @@ func main() {
 	e.Use(middleware.Recover())
 	e.Use(initializers.Auth)
 
-	DefaultCORSConfig := middleware.CORSConfig{
-		AllowOrigins: []string{"*"},
-		AllowMethods: []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete},
-	}
-	e.Use(middleware.CORSWithConfig(DefaultCORSConfig))
+	// DefaultCORSConfig := middleware.CORSConfig{
+	//     AllowOrigins: []string{"*"},
+	//   AllowMethods: []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete},
+	// }
+	// e.Use(middleware.CORSWithConfig(DefaultCORSConfig))
 
 	routes.SetWebInterfaces(e)
 	routes.SetWsInterfaces(e)
