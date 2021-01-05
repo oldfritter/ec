@@ -1,6 +1,12 @@
 ---
 # Web --------------------------------------------------------------------------------------
 ## user
+- path: /api/web/v1/user/me
+  method: GET
+  auth: true
+- path: /api/web/v1/user/me
+  method: POST
+  auth: true
 - path: /api/web/v1/user/info
   method: GET
   auth: true
@@ -11,6 +17,12 @@
   method: POST
 - path: /api/web/v1/user/register
   method: POST
+- path: /api/web/v1/user/friend/add
+  method: POST
+  auth: true
+- path: /api/web/v1/user/friend/accept
+  method: POST
+  auth: true
 
 # pub_key
 - path: /api/web/v1/pub_key/upload

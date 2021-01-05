@@ -1,8 +1,13 @@
 package models
 
+import (
+	"github.com/jinzhu/gorm"
+)
+
 type FriendShip struct {
-	UserId   int
-	FriendId int
-	MarkName string
-	State    int `gorm:"default:null"` // 状态
+	gorm.Model
+	UserId   uint
+	FriendId uint
+	State    int    `gorm:"default:0"`    // 状态
+	MarkName string `gorm:"default:null"` // 备注
 }

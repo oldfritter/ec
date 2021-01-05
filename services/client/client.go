@@ -27,8 +27,8 @@ const (
 )
 
 var (
-	privKeys    [1]*rsa.PrivateKey
-	matePubKeys [1]string
+	privKeys    [3]*rsa.PrivateKey
+	matePubKeys [3]string
 
 	email, password, token, mateSn string
 )
@@ -219,7 +219,7 @@ func subscribeMessage() {
 			json.Unmarshal(m, &ms)
 			message, level := ms.Content, ms.Level
 			for i, _ := range privKeys {
-				mess, _ := utils.PrivateKeyDecrypt(message, privKeys[level-i])
+				mess, _ := utils.PrivateKeyDecrypt(message, privKeys[level-i-1])
 				b, _ := base64.StdEncoding.DecodeString(mess)
 				message = string(b)
 			}

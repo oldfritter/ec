@@ -23,7 +23,9 @@ type User struct {
 }
 
 func (user *User) BeforeCreate(db *gorm.DB) {
-	user.SetPasswordDigest()
+	if user.Password != "" {
+		user.SetPasswordDigest()
+	}
 	count := 4
 	for count > 0 {
 		user.Sn = "DE" + utils.RandStringRunes(10) + "MO"

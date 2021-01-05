@@ -18,6 +18,8 @@ func SetWebInterfaces(e *echo.Echo) {
 	e.POST("/api/web/v1/user/info", v1.UserInfo)
 	e.POST("/api/web/v1/user/login", v1.UserLogin)
 	e.POST("/api/web/v1/user/register", v1.UserRegister)
+	e.POST("/api/web/v1/user/friend/add", v1.UserFriendAdd)
+	e.POST("/api/web/v1/user/friend/accept", v1.UserFriendAccept)
 
 	e.GET("/api/web/v1/cloud_storage/upload/auth", v1.CloudStorageUploadAuth)
 }
