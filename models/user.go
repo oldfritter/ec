@@ -19,7 +19,8 @@ type User struct {
 	Groups     []*Group     `gorm:"many2many:group_members"`
 	Friends    []*User      `gorm:"many2many:friend_ships"`
 
-	Password string `sql:"-" json:"-"`
+	PendingFriends []*User `gorm:"-"`
+	Password       string  `gorm:"-" json:"-"`
 }
 
 func (user *User) BeforeCreate(db *gorm.DB) {

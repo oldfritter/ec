@@ -7,16 +7,16 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"ec/config"
-	"ec/models"
+	. "ec/models"
 	"ec/services/api/helpers"
 	"ec/utils"
 )
 
 func UserLogin(c echo.Context) (err error) {
 	params := helpers.StringParams(c)
-	db := models.MainDbBegin()
+	db := MainDbBegin()
 	defer db.DbRollback()
-	var user models.User
+	var user User
 	if db.Joins("INNER JOIN (identities) ON (identities.user_id = users.id)").
 		Where("identities.source = ?", params["source"]).
 		Where("identities.symbol = ?", params["symbol"]).
@@ -32,15 +32,18 @@ func UserLogin(c echo.Context) (err error) {
 	// TODO:
 	// notify user
 
-	db.Joins("INNER JOIN (friend_ships as fs) ON (fs.friend_id = users.id)").
-		Preload("PublicKeys", func(db *gorm.DB) *gorm.DB {
-			return db.Order("public_keys.index ASC")
-		}).Where("fs.state = ?", 1).
-		Where("fs.user_id = ?", user.ID).Find(&user.Friends)
-	token := models.Token{UserId: int(user.ID), RemoteIp: c.RealIP()}
+	token := Token{UserId: int(user.ID), RemoteIp: c.RealIP()}
 	db.Create(&token)
 	db.DbCommit()
 	user.Tokens = append(user.Tokens, &token)
+	config.MainDb.Joins("INNER JOIN (friend_ships as fs) ON (fs.friend_id = users.id)").
+		Preload("PublicKeys", func(db *gorm.DB) *gorm.DB {
+			return db.Order("public_keys.index ASC")
+		}).Where("fs.state = ?", Friend).Where("fs.user_id = ?", user.ID).Find(&user.Friends)
+	config.MainDb.Joins("INNER JOIN (friend_ships as fs) ON (fs.friend_id = users.id)").
+		Preload("PublicKeys", func(db *gorm.DB) *gorm.DB {
+			return db.Order("public_keys.index ASC")
+		}).Where("fs.state = ?", PendingFriend).Where("fs.user_id = ?", user.ID).Find(&user.PendingFriends)
 	response := utils.SuccessResponse
 	response.Body = user
 	return c.JSON(http.StatusOK, response)
@@ -48,7 +51,7 @@ func UserLogin(c echo.Context) (err error) {
 
 func UserInfo(c echo.Context) (err error) {
 	params := helpers.StringParams(c)
-	var user models.User
+	var user User
 	if config.MainDb.Where("sn = ?", params["sn"]).
 		Preload("PublicKeys", func(db *gorm.DB) *gorm.DB {
 			return db.Order("public_keys.index ASC")
@@ -61,9 +64,15 @@ func UserInfo(c echo.Context) (err error) {
 }
 
 func UserMe(c echo.Context) (err error) {
-	user := c.Get("current_user").(models.User)
+	user := c.Get("current_user").(User)
 	config.MainDb.Joins("INNER JOIN (friend_ships as fs) ON (fs.friend_id = users.id)").
-		Preload("PublicKeys").Where("fs.state = ?", 1).Where("fs.user_id = ?", user.ID).Find(&user.Friends)
+		Preload("PublicKeys", func(db *gorm.DB) *gorm.DB {
+			return db.Order("public_keys.index ASC")
+		}).Where("fs.state = ?", Friend).Where("fs.user_id = ?", user.ID).Find(&user.Friends)
+	config.MainDb.Joins("INNER JOIN (friend_ships as fs) ON (fs.friend_id = users.id)").
+		Preload("PublicKeys", func(db *gorm.DB) *gorm.DB {
+			return db.Order("public_keys.index ASC")
+		}).Where("fs.state = ?", PendingFriend).Where("fs.user_id = ?", user.ID).Find(&user.PendingFriends)
 	response := utils.SuccessResponse
 	response.Body = user
 	return c.JSON(http.StatusOK, response)
@@ -71,10 +80,10 @@ func UserMe(c echo.Context) (err error) {
 
 func UserRegister(c echo.Context) (err error) {
 	params := helpers.StringParams(c)
-	db := models.MainDbBegin()
+	db := MainDbBegin()
 	defer db.DbRollback()
-	var identity models.Identity
-	var user models.User
+	var identity Identity
+	var user User
 	if db.Where("`source` = ?", params["source"]).
 		Where("symbol = ?", params["symbol"]).
 		First(&identity).RecordNotFound() {
@@ -84,7 +93,7 @@ func UserRegister(c echo.Context) (err error) {
 		identity.Symbol = params["symbol"]
 		db.Save(&user)
 		identity.User = user
-		token := models.Token{UserId: int(user.ID), RemoteIp: c.RealIP()}
+		token := Token{UserId: int(user.ID), RemoteIp: c.RealIP()}
 		db.Create(&token)
 		user.Tokens = append(user.Tokens, &token)
 		db.Save(&identity)
@@ -99,24 +108,27 @@ func UserRegister(c echo.Context) (err error) {
 
 func UserFriendAdd(c echo.Context) (err error) {
 	params := helpers.StringParams(c)
-	user := c.Get("current_user").(models.User)
-	if params["friend"] == "" {
+	user := c.Get("current_user").(User)
+	if params["sn"] == "" {
 		return utils.BuildError("2005")
 	}
-	db := models.MainDbBegin()
+	db := MainDbBegin()
 	defer db.DbRollback()
-	var friend models.User
-	if db.Where("sn = ?", params["friend"]).First(&friend).RecordNotFound() {
+	var friend User
+	if db.Where("sn = ?", params["sn"]).First(&friend).RecordNotFound() {
 		return utils.BuildError("2001")
 	}
-	db.Save(&models.FriendShip{UserId: user.ID, FriendId: friend.ID, State: 1})
-	db.Save(&models.FriendShip{UserId: friend.ID, FriendId: user.ID})
+	db.Save(&FriendShip{UserId: user.ID, FriendId: friend.ID, State: 1})
+	db.Save(&FriendShip{UserId: friend.ID, FriendId: user.ID})
 	db.DbCommit()
 	config.MainDb.Joins("INNER JOIN (friend_ships as fs) ON (fs.friend_id = users.id)").
 		Preload("PublicKeys", func(db *gorm.DB) *gorm.DB {
 			return db.Order("public_keys.index ASC")
-		}).Where("fs.state = ?", 1).
-		Where("fs.user_id = ?", user.ID).Find(&user.Friends)
+		}).Where("fs.state = ?", Friend).Where("fs.user_id = ?", user.ID).Find(&user.Friends)
+	config.MainDb.Joins("INNER JOIN (friend_ships as fs) ON (fs.friend_id = users.id)").
+		Preload("PublicKeys", func(db *gorm.DB) *gorm.DB {
+			return db.Order("public_keys.index ASC")
+		}).Where("fs.state = ?", PendingFriend).Where("fs.user_id = ?", user.ID).Find(&user.PendingFriends)
 	response := utils.SuccessResponse
 	response.Body = user
 	return c.JSON(http.StatusOK, response)
@@ -124,26 +136,62 @@ func UserFriendAdd(c echo.Context) (err error) {
 
 func UserFriendAccept(c echo.Context) (err error) {
 	params := helpers.StringParams(c)
-	user := c.Get("current_user").(models.User)
-	if params["friend"] == "" {
+	user := c.Get("current_user").(User)
+	if params["sn"] == "" {
 		return utils.BuildError("2005")
 	}
-	db := models.MainDbBegin()
+	db := MainDbBegin()
 	defer db.DbRollback()
-	var friend models.User
-	if db.Where("sn = ?", params["friend"]).First(&friend).RecordNotFound() {
+	var friend User
+	if db.Where("sn = ?", params["sn"]).First(&friend).RecordNotFound() {
 		return utils.BuildError("2001")
 	}
-	var fs models.FriendShip
+	var fs FriendShip
 	db.Where("user_id = ?", user.ID).Where("friend_id = ?", friend.ID).First(&fs)
-	fs.State = 1
+	fs.State = Friend
 	db.Save(&fs)
 	db.DbCommit()
 	config.MainDb.Joins("INNER JOIN (friend_ships as fs) ON (fs.friend_id = users.id)").
 		Preload("PublicKeys", func(db *gorm.DB) *gorm.DB {
 			return db.Order("public_keys.index ASC")
-		}).Where("fs.state = ?", 1).
-		Where("fs.user_id = ?", user.ID).Find(&user.Friends)
+		}).Where("fs.state = ?", Friend).Where("fs.user_id = ?", user.ID).Find(&user.Friends)
+	config.MainDb.Joins("INNER JOIN (friend_ships as fs) ON (fs.friend_id = users.id)").
+		Preload("PublicKeys", func(db *gorm.DB) *gorm.DB {
+			return db.Order("public_keys.index ASC")
+		}).Where("fs.state = ?", PendingFriend).Where("fs.user_id = ?", user.ID).Find(&user.PendingFriends)
+	response := utils.SuccessResponse
+	response.Body = user
+	return c.JSON(http.StatusOK, response)
+}
+
+func UserFriendBlock(c echo.Context) (err error) {
+	params := helpers.StringParams(c)
+	user := c.Get("current_user").(User)
+	if params["sn"] == "" {
+		return utils.BuildError("2005")
+	}
+	db := MainDbBegin()
+	defer db.DbRollback()
+	var friend User
+	if db.Where("sn = ?", params["sn"]).First(&friend).RecordNotFound() {
+		return utils.BuildError("2001")
+	}
+	var fs, ufs FriendShip
+	db.Where("user_id = ?", user.ID).Where("friend_id = ?", friend.ID).First(&fs)
+	fs.State = Blocked
+	db.Save(&fs)
+	db.Where("user_id = ?", friend.ID).Where("friend_id = ?", user.ID).First(&ufs)
+	ufs.State = Blocked
+	db.Save(&ufs)
+	db.DbCommit()
+	config.MainDb.Joins("INNER JOIN (friend_ships as fs) ON (fs.friend_id = users.id)").
+		Preload("PublicKeys", func(db *gorm.DB) *gorm.DB {
+			return db.Order("public_keys.index ASC")
+		}).Where("fs.state = ?", Friend).Where("fs.user_id = ?", user.ID).Find(&user.Friends)
+	config.MainDb.Joins("INNER JOIN (friend_ships as fs) ON (fs.friend_id = users.id)").
+		Preload("PublicKeys", func(db *gorm.DB) *gorm.DB {
+			return db.Order("public_keys.index ASC")
+		}).Where("fs.state = ?", PendingFriend).Where("fs.user_id = ?", user.ID).Find(&user.PendingFriends)
 	response := utils.SuccessResponse
 	response.Body = user
 	return c.JSON(http.StatusOK, response)
