@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	messagePongWait = time.Minute * 100
+	messagePongWait = time.Minute
 )
 
 // 获取消息

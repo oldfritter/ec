@@ -118,7 +118,7 @@ func UserFriendAdd(c echo.Context) (err error) {
 	if db.Where("sn = ?", params["sn"]).First(&friend).RecordNotFound() {
 		return utils.BuildError("2001")
 	}
-	db.Save(&FriendShip{UserId: user.ID, FriendId: friend.ID, State: 1})
+	db.Save(&FriendShip{UserId: user.ID, FriendId: friend.ID, State: Friend})
 	db.Save(&FriendShip{UserId: friend.ID, FriendId: user.ID})
 	db.DbCommit()
 	config.MainDb.Joins("INNER JOIN (friend_ships as fs) ON (fs.friend_id = users.id)").

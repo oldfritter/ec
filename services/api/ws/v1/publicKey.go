@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	keyPongWait = time.Minute * 10
+	keyPongWait = time.Minute
 )
 
 // 获取新的公钥
