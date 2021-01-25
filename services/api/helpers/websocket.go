@@ -26,6 +26,8 @@ func InitWsConn(e echo.Context, wait time.Duration) (c *websocket.Conn, err erro
 		err := c.WriteMessage(websocket.TextMessage, []byte(strconv.FormatInt(time.Now().UnixNano()/1000000, 10)))
 		if err != nil {
 			log.Println("sended ping err: ", err)
+			c.Close()
+			return err
 		}
 		return nil
 	})
@@ -57,6 +59,7 @@ func SendPing(c *websocket.Conn, timestamp *string) (err error) {
 			err := ping(*timestamp)
 			if err != nil {
 				log.Println("sended message ping err: ", err)
+				return err
 			}
 		}
 	}

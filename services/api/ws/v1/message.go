@@ -30,14 +30,14 @@ func MessageListen(e echo.Context) (err error) {
 
 	user := e.Get("current_user").(models.User)
 	ctx, cancel := context.WithCancel(context.Background())
-	var timestamp string
 
+	var timestamp string
 	// 定时发出ping
 	go func() {
 		err := helpers.SendPing(c, &timestamp)
 		if err != nil {
-			log.Println(err)
 			cancel()
+			return
 		}
 	}()
 
