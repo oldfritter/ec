@@ -23,21 +23,10 @@ func InitWsConn(e echo.Context, wait time.Duration) (c *websocket.Conn, err erro
 	}
 	c.SetWriteDeadline(time.Now().Add(wait))
 	c.SetPingHandler(func(message string) error {
-		ticker := time.NewTicker(time.Minute)
-		defer ticker.Stop()
-		for {
-			select {
-			case t := <-ticker.C:
-				err := c.WriteMessage(websocket.PingMessage, []byte(strconv.Itoa(t.Nanosecond())))
-				if err != nil {
-					log.Println("sended ping err: ", err)
-				}
-			}
+		err := c.WriteMessage(websocket.TextMessage, []byte(strconv.FormatInt(time.Now().UnixNano()/1000000, 10)))
+		if err != nil {
+			log.Println("sended ping err: ", err)
 		}
-		return nil
-	})
-	c.SetPongHandler(func(message string) error {
-		c.SetReadDeadline(time.Now().Add(wait))
 		return nil
 	})
 	return

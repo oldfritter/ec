@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"strconv"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -32,6 +33,40 @@ func PublicKeyListen(e echo.Context) (err error) {
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
+	var timestamp string
+
+	// 定时发出ping
+	go func() {
+		ticker := time.NewTicker(time.Second * 30)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-ticker.C:
+				timestamp = strconv.FormatInt(time.Now().UnixNano()/1000000, 10)
+				ping := c.PingHandler()
+				err := ping(timestamp)
+				if err != nil {
+					log.Println("sended public-key ping err: ", err)
+					cancel()
+				}
+			}
+		}
+	}()
+
+	// 读取pong
+	go func() {
+		for {
+			_, m, err := c.ReadMessage()
+			if err != nil {
+				log.Println("parse public-key pong err: ", err)
+				cancel()
+			}
+			if string(m) == timestamp {
+				c.SetWriteDeadline(time.Now().Add(keyPongWait))
+			}
+		}
+	}()
+
 	err = config.ListenPubSubChannels(
 		ctx,
 		func() error {
@@ -67,7 +102,7 @@ func PublicKeyListen(e echo.Context) (err error) {
 	return
 }
 
-// 上传新的公钥
+// 上传新的公钥,暂时未启用
 func PublicKeyUpload(e echo.Context) (err error) {
 	c, err := helpers.InitWsConn(e, keyPongWait)
 	defer c.Close()
