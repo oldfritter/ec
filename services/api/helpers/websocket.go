@@ -41,7 +41,6 @@ func ParsePong(c *websocket.Conn, timestamp *string, wait time.Duration) (err er
 		return
 	}
 	if string(m) == *timestamp {
-		log.Println("parse pong : ", string(m))
 		c.SetWriteDeadline(time.Now().Add(wait))
 		err = ParsePong(c, timestamp, wait)
 	}
