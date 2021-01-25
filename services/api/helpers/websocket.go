@@ -31,3 +31,34 @@ func InitWsConn(e echo.Context, wait time.Duration) (c *websocket.Conn, err erro
 	})
 	return
 }
+
+func ParsePong(c *websocket.Conn, timestamp *string, wait time.Duration) (err error) {
+	_, m, err := c.ReadMessage()
+	if err != nil {
+		log.Println("parse pong err: ", err)
+		return
+	}
+	if string(m) == *timestamp {
+		log.Println("parse pong : ", string(m))
+		c.SetWriteDeadline(time.Now().Add(wait))
+		err = ParsePong(c, timestamp, wait)
+	}
+	return
+}
+
+func SendPing(c *websocket.Conn, timestamp *string) (err error) {
+	ticker := time.NewTicker(time.Second * 30)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-ticker.C:
+			*timestamp = strconv.FormatInt(time.Now().UnixNano()/1000000, 10)
+			ping := c.PingHandler()
+			err := ping(*timestamp)
+			if err != nil {
+				log.Println("sended message ping err: ", err)
+			}
+		}
+	}
+	return
+}

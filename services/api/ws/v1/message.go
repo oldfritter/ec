@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"strconv"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -17,7 +16,7 @@ import (
 )
 
 const (
-	messagePongWait = time.Minute
+	messagePongWait = time.Minute * 3
 )
 
 // 获取消息
@@ -35,33 +34,19 @@ func MessageListen(e echo.Context) (err error) {
 
 	// 定时发出ping
 	go func() {
-		ticker := time.NewTicker(time.Second * 30)
-		defer ticker.Stop()
-		for {
-			select {
-			case <-ticker.C:
-				timestamp = strconv.FormatInt(time.Now().UnixNano()/1000000, 10)
-				ping := c.PingHandler()
-				err := ping(timestamp)
-				if err != nil {
-					log.Println("sended message ping err: ", err)
-					cancel()
-				}
-			}
+		err := helpers.SendPing(c, &timestamp)
+		if err != nil {
+			log.Println(err)
+			cancel()
 		}
 	}()
 
 	// 读取pong
 	go func() {
-		for {
-			_, m, err := c.ReadMessage()
-			if err != nil {
-				log.Println("parse message pong err: ", err)
-				cancel()
-			}
-			if string(m) == timestamp {
-				c.SetWriteDeadline(time.Now().Add(messagePongWait))
-			}
+		err := helpers.ParsePong(c, &timestamp, messagePongWait)
+		if err != nil {
+			log.Println(err)
+			cancel()
 		}
 	}()
 

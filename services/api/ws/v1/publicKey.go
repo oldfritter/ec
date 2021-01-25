@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"log"
-	"strconv"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -16,7 +15,7 @@ import (
 )
 
 const (
-	keyPongWait = time.Minute
+	keyPongWait = time.Minute * 3
 )
 
 // 获取新的公钥
@@ -37,33 +36,19 @@ func PublicKeyListen(e echo.Context) (err error) {
 
 	// 定时发出ping
 	go func() {
-		ticker := time.NewTicker(time.Second * 30)
-		defer ticker.Stop()
-		for {
-			select {
-			case <-ticker.C:
-				timestamp = strconv.FormatInt(time.Now().UnixNano()/1000000, 10)
-				ping := c.PingHandler()
-				err := ping(timestamp)
-				if err != nil {
-					log.Println("sended public-key ping err: ", err)
-					cancel()
-				}
-			}
+		err := helpers.SendPing(c, &timestamp)
+		if err != nil {
+			log.Println(err)
+			cancel()
 		}
 	}()
 
 	// 读取pong
 	go func() {
-		for {
-			_, m, err := c.ReadMessage()
-			if err != nil {
-				log.Println("parse public-key pong err: ", err)
-				cancel()
-			}
-			if string(m) == timestamp {
-				c.SetWriteDeadline(time.Now().Add(keyPongWait))
-			}
+		err := helpers.ParsePong(c, &timestamp, messagePongWait)
+		if err != nil {
+			log.Println(err)
+			cancel()
 		}
 	}()
 
