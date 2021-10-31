@@ -28,6 +28,9 @@ func MainMigrations() {
 	mainDB.AutoMigrate(&Identity{})
 	mainDB.Model(&Identity{}).AddUniqueIndex("index_identity_on_source_and_symbol", "source", "symbol")
 
+	// message
+	mainDB.AutoMigrate(&Message{})
+
 	// public_key
 	mainDB.AutoMigrate(&PublicKey{})
 	mainDB.Model(&PublicKey{}).AddUniqueIndex("index_public_key_on_user_sn_and_index", "user_sn", "index")

@@ -28,6 +28,7 @@ func MessageUpload(c echo.Context) (err error) {
 		Content:    params["content"],
 		Level:      level,
 	}
+	message.Version, _ = strconv.Atoi(params["version"])
 
 	b, err := json.Marshal(message)
 	if err != nil {
@@ -35,6 +36,24 @@ func MessageUpload(c echo.Context) (err error) {
 	}
 	config.PublishToPubSubChannels(models.NotifyMessageWithRedis, &b)
 
+	config.MainDb.Save(&message)
+	message.DelayNotify(config.GetRedisConn("data"))
+
+	response := utils.SuccessResponse
+	return c.JSON(http.StatusOK, response)
+}
+
+func MessageList(c echo.Context) (err error) {
+	user := c.Get("current_user").(models.User)
+	response := utils.SuccessResponse
+	response.Body = user.NotifyMessages(config.GetRedisConn("data"))
+	return c.JSON(http.StatusOK, response)
+}
+
+func MessageRead(c echo.Context) (err error) {
+	params := helpers.StringParams(c)
+	user := c.Get("current_user").(models.User)
+	user.ReadMessage(config.GetRedisConn("data"), params["id"])
 	response := utils.SuccessResponse
 	return c.JSON(http.StatusOK, response)
 }

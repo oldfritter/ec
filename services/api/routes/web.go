@@ -8,6 +8,8 @@ import (
 
 func SetWebInterfaces(e *echo.Echo) {
 
+	e.GET("/api/web/v1/message/list", v1.MessageList)
+	e.POST("/api/web/v1/message/read", v1.MessageRead)
 	e.POST("/api/web/v1/message/upload", v1.MessageUpload)
 
 	e.POST("/api/web/v1/pub_key/upload", v1.PubKeyUpload)

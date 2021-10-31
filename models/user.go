@@ -1,9 +1,13 @@
 package models
 
 import (
+	"fmt"
+
+	"github.com/gomodule/redigo/redis"
 	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
 
+	"ec/config"
 	"ec/utils"
 )
 
@@ -16,7 +20,6 @@ type User struct {
 
 	Tokens     []*Token     `gorm:"ForeignKey:UserId"`
 	PublicKeys []*PublicKey `gorm:"ForeignKey:UserId"`
-	Groups     []*Group     `gorm:"many2many:group_members"`
 	Friends    []*User      `gorm:"many2many:friend_ships"`
 
 	PendingFriends []*User `gorm:"-"`
@@ -52,4 +55,20 @@ func (user *User) SetPasswordDigest() {
 
 func (user *User) setPublicKeys(db *gorm.DB) {
 	db.Where("user_sn = ?", user.Sn).Order("`index`").Find(&user.PublicKeys)
+}
+
+func (self *User) receiverNotifyKey() string {
+	return fmt.Sprintf("ec:message:notify:%v", self.Sn)
+}
+
+func (self *User) NotifyMessages(redisCon redis.Conn) []Message {
+	var messages []Message
+	redisCon.Do("EXPIRE", self.receiverNotifyKey(), 10)
+	ids, _ := redis.Int(redisCon.Do("LRANGE", self.receiverNotifyKey(), 0, -1))
+	config.MainDb.Where("id in (?)", ids).Find(&messages)
+	return messages
+}
+
+func (self *User) ReadMessage(redisCon redis.Conn, id string) {
+	redisCon.Do("LREM", self.receiverNotifyKey(), 0, id)
 }
